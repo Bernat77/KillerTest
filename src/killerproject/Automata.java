@@ -1,0 +1,105 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package killerproject;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author berna
+ */
+public class Automata extends Alive {
+
+    public Automata(KillerGame kg, Color color) {
+        this.kg = kg;
+        alive = true;
+
+        HEIGHT = 30;
+        WIDTH = 30;
+
+        speed = 5;
+        dx = speed;
+        dy = speed;
+        x = (int) (kg.getViewer().getWidth() / 2 * Math.random());
+        y = (int) (kg.getViewer().getHeight() / 2 * Math.random());
+
+        hitbox = new Rectangle((int)x, (int)y, WIDTH, HEIGHT);
+
+        this.color = color;
+
+        time = System.nanoTime();
+
+    }
+
+    public void run() {
+
+        while (alive) {
+            move();
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ex) {
+
+            }
+        }
+    }
+
+    @Override
+    public void move() {
+
+        double culo = (System.nanoTime()-time)/10000000d;
+        
+        x += dx * culo;
+        y += dy * culo;
+
+        updateHitBox();
+        kg.checkColision(this);
+        time = System.nanoTime();
+
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        g.setColor(color);
+        g.fillOval((int)x, (int)y, HEIGHT, WIDTH);
+        g.drawString("X: " + x + " Y: " + y, 20, 20);
+        if (dx < 0) {
+            g.setColor(Color.green);
+        }
+        g.drawString("dx: " + dx, 20, 40);
+        g.setColor(color);
+        if (dy < 0) {
+            g.setColor(Color.green);
+        }
+        g.drawString("dx: " + dy, 60, 40);
+        // g.drawImage(,x, y,null);
+    }
+
+    public void updateHitBox() {
+        hitbox.setBounds((int)x, (int)y, WIDTH, HEIGHT);
+    }
+
+    public Rectangle nextMove() {
+        return new Rectangle((int)x + (int) dx, (int)y + (int) dy, WIDTH, HEIGHT);
+    }
+
+    public void collision() {
+        dx *= -1;
+        dy *= -1;
+    }
+
+    public void death() {
+        alive = false;
+    }
+
+}
