@@ -7,8 +7,8 @@ package killerproject;
 
 /**
  *
- * @author berna
+ * @author Bernat2
  */
-public class NextKiller {
+public class VisualHandler {
     
 }

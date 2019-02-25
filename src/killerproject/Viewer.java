@@ -25,8 +25,7 @@ public class Viewer extends Canvas implements Runnable {
     static final int WIDTH = 1830;
     static final int HEIGHT = 1030;
 
-    private long time;
-    private int fps = 30;
+    private int fps = 60;
     private double averageFPS;
     private double target = 1000 / fps;
 
@@ -41,20 +40,21 @@ public class Viewer extends Canvas implements Runnable {
         setBackground(Color.WHITE);
         setFocusable(true);
         requestFocus();
-        time = System.currentTimeMillis();
+      
 
     }
 
     public void run() {
         images();
         while (true) {
-            double dif = System.currentTimeMillis() - time;
-            if (dif >= target) {
+            update();
+            try {
+                Thread.sleep((long) target);
+            } catch (InterruptedException ex) {
 
-                update(this.getGraphics());
-                time = System.currentTimeMillis();
             }
         }
+
     }
 
     public void images() {
@@ -64,7 +64,7 @@ public class Viewer extends Canvas implements Runnable {
         fondo = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR);
     }
 
-    public void update(Graphics g) {
+    public void update() {
 
         //cogemos los graficos de la imagen
         Graphics g2d = offImg.getGraphics();

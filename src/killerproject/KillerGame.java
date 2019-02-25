@@ -26,8 +26,8 @@ public class KillerGame extends JFrame {
     private KillerServer server;
     private KillerClient client;
 
-    private NextKiller nk;
-    private PreviousKiller pk;
+    private VisualHandler nk;
+    private VisualHandler pk;
 
     //Gamepad (Móvil)
     private KillerPad kpad;
