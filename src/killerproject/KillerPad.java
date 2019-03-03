@@ -29,11 +29,11 @@ public class KillerPad implements Runnable {
 
     Controlled player;
 
-    public KillerPad(Socket sock, String ip, KillerGame killergame) {
+    public KillerPad(Socket sock, String ip, KillerGame killergame, String user) {
         this.sock = sock;
         this.ip = ip;
         this.killergame = killergame;
-        player = new Controlled(killergame, Color.yellow, ip);
+        player = new Controlled(killergame, Color.yellow, ip, user);
         killergame.getObjects().add(player);
         new Thread(player).start();
     }
@@ -79,13 +79,9 @@ public class KillerPad implements Runnable {
 
     }
 
-    public void request(String msg) {       
-
-        if (msg.substring(0, 4).equals("from")) {
-            player.setUser(msg.trim().split(":")[1]);
-
-        } else if (msg.substring(0, 3).equals("pad")) {
-            if (msg.trim().split(":")[1].equals("act")) {
+    public void request(String msg) {
+        if (msg.substring(0, 3).equals("pad")) {
+            if (msg.trim().split(":")[1].equals("shoot")) {
                 player.shoot();
             } else {
                 player.setDirections(msg.split(":")[1]);

@@ -24,7 +24,7 @@ public class KillerRules {
 
     }
 
-    public static void collisionShoot(Controlled.Shoot obj1, Alive obj2) {
+    public static void collisionShoot(Shoot obj1, Alive obj2) {
         obj1.death();
         obj2.death();
     }

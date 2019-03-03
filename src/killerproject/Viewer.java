@@ -25,7 +25,7 @@ public class Viewer extends Canvas implements Runnable {
     static final int WIDTH = 1830;
     static final int HEIGHT = 1030;
 
-    private int fps = 60;
+    private int fps = 30;
     private double averageFPS;
     private double target = 1000 / fps;
 

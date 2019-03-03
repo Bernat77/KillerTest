@@ -5,10 +5,64 @@
  */
 package killerproject;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author berna
  */
-public class KillerClient {
-    
+public class KillerClient implements Runnable {
+
+    private Socket sock;
+    private VisualHandler visual;
+
+    public KillerClient() {
+
+    }
+
+    public KillerClient(VisualHandler v) {
+        visual = v;
+    }
+
+    @Override
+    public void run() {
+
+        while (true) {
+            sock = visual.getSock();
+            while (sock == null && visual.getIp() != null && visual.getOriginport() != 0) {
+                try {
+                    sock = new Socket(visual.getIp(), visual.getOriginport());
+                    contact(sock);
+                    visual.setSock(sock);
+                    System.out.println("setteado por cliente");
+
+                } catch (IOException ex) {
+                }
+
+                try {
+                    
+                    Thread.sleep(200);
+                } catch (InterruptedException ex) {
+                }
+
+            }
+        }
+    }
+
+    public void contact(Socket sock) throws IOException {
+        String dir = "R";
+        if (!visual.isRight()) {
+            dir = "L";
+        }
+
+        PrintWriter out = new PrintWriter(sock.getOutputStream(), true);
+        out.println("from:V/" + dir + "/" + visual.getKillergame().getSERVERPORT());
+
+    }
+
 }

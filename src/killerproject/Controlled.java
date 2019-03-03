@@ -8,6 +8,7 @@ package killerproject;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 
 /**
  *
@@ -19,36 +20,38 @@ public class Controlled extends Alive {
     String user;
     boolean up, down, right, left;
     boolean fright;
-    Shoot shoot;
+    private ArrayList<Shoot> shoots = new ArrayList();
 
-    public Controlled(KillerGame kg, Color color, String ip) {
+    public Controlled(KillerGame kg, Color color, String ip, String user) {
         this.kg = kg;
         this.ip = ip;
 
         //aspecto visual
         HEIGHT = 30;
         WIDTH = 30;
+        this.user = user;
 
         this.color = color;
 
-        hitbox = new Rectangle(x, y, WIDTH, HEIGHT);
+        hitbox = new Rectangle((int) x, (int) y, WIDTH, HEIGHT);
 
         //movimiento y posición
         dx = 0;
         dy = 0;
-        speed = 5.2;
+        speed = 3.1;
 
         x = (int) (kg.getViewer().getWidth() / 2 * Math.random());
         y = (int) (kg.getViewer().getHeight() / 2 * Math.random());
 
         fright = true;
 
+        time = System.nanoTime();
+
     }
 
     public void run() {
 
-        while (true) {
-            double ptime= System.nanoTime();
+        while (alive) {
             move();
             try {
                 Thread.sleep(15);
@@ -62,18 +65,20 @@ public class Controlled extends Alive {
 
     @Override
     public void move() {
+        double timedif = (System.nanoTime() - time) / 10000000d;
 
+        kg.checkColision(this);
         checkMove();
-        checkShoot();
 
-        x += (int) dx;
-        y += (int) dy;
+        x += dx * timedif;
+        y += dy * timedif;
 
         dx = 0;
         dy = 0;
 
         updateHitBox();
-        kg.checkColision(this);
+
+        time = System.nanoTime();
 
     }
 
@@ -83,31 +88,18 @@ public class Controlled extends Alive {
     }
 
     public void death() {
+        alive = false;
 
     }
 
     public Rectangle nextMove() {
-        return new Rectangle(x + (int) dx, y + (int) dy, WIDTH, HEIGHT);
+        return new Rectangle((int) (x + dx), (int) (y + dy), WIDTH, HEIGHT);
     }
 
     public void shoot() {
-        shoot = new Shoot(x, y, (int) (Math.min(HEIGHT, WIDTH) / 2), fright);
-    }
-
-    public void checkShoot() {
-
-        if (shoot != null) {
-            shoot.move();
-            kg.checkColision(shoot);
-        }
-
-    }
-
-    public void drawShoot(Graphics g) {
-        if (shoot != null) {
-            g.setColor(Color.yellow);
-            g.fillOval(shoot.x, shoot.y, shoot.radius, shoot.radius);
-        }
+        Shoot fire = new Shoot(kg, color, this);
+        shoots.add(fire);
+        new Thread(fire).start();
     }
 
     public void checkMove() {
@@ -250,15 +242,28 @@ public class Controlled extends Alive {
     }
 
     public void updateHitBox() {
-        hitbox.setBounds(x, y, WIDTH, HEIGHT);
+        hitbox.setBounds((int) x, (int) y, WIDTH, HEIGHT);
     }
 
     @Override
     public void draw(Graphics g) {
         g.setColor(color);
-        g.fillOval(x, y, HEIGHT, WIDTH);
-        drawShoot(g);
+        g.drawString(user, (int) x, (int) y - (HEIGHT / 2));
+        g.fillOval((int) x, (int) y, HEIGHT, WIDTH);
+        drawShoots(g);
         // g.drawImage(,x, y,null);
+    }
+
+    public void drawShoots(Graphics g) {
+        if (!shoots.isEmpty()) {
+            for (int i = 0; i < shoots.size(); i++) {
+                Shoot current = shoots.get(i);
+                g.setColor(current.getColor());
+                g.fillOval((int) current.getX(), (int) current.getY(),
+                        current.getRadius(), current.getRadius());
+            }
+
+        }
     }
 
     public String getIp() {
@@ -277,94 +282,12 @@ public class Controlled extends Alive {
         this.user = user;
     }
 
-    public class Shoot {
+    public ArrayList<Shoot> getShoots() {
+        return shoots;
+    }
 
-        private int x;
-        private int y;
-        private int radius;
-        private double speed;
-        private boolean frightdir;
-        Rectangle hitbox;
-
-        private Shoot(int x, int y, int radius, boolean frightdir) {
-            this.x = x;
-            this.y = y + (radius / 2);
-            this.radius = radius;
-            hitbox = new Rectangle(x, y, WIDTH, HEIGHT);
-            this.frightdir = frightdir;
-            this.speed = 12;
-
-        }
-
-        private void move() {
-            if (this.frightdir) {
-                x += (int) speed;
-            } else {
-                x -= (int) speed;
-            }
-            updateHitBox();
-        }
-
-        public Controlled getControlled() {
-            return Controlled.this;
-        }
-
-        public void death() {
-            Controlled.this.shoot = null;
-        }
-
-        public void updateHitBox() {
-            hitbox.setBounds(x, y, WIDTH, HEIGHT);
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public void setX(int x) {
-            this.x = x;
-        }
-
-        public int getY() {
-            return y;
-        }
-
-        public void setY(int y) {
-            this.y = y;
-        }
-
-        public int getRadius() {
-            return radius;
-        }
-
-        public void setRadius(int radius) {
-            this.radius = radius;
-        }
-
-        public double getSpeed() {
-            return speed;
-        }
-
-        public void setSpeed(double speed) {
-            this.speed = speed;
-        }
-
-        public boolean isFrightdir() {
-            return frightdir;
-        }
-
-        public void setFrightdir(boolean frightdir) {
-            this.frightdir = frightdir;
-        }
-
-        public Rectangle getHitbox() {
-            return hitbox;
-        }
-
-        public void setHitbox(Rectangle hitbox) {
-            this.hitbox = hitbox;
-        }
-
+    public void setShoots(ArrayList<Shoot> shoots) {
+        this.shoots = shoots;
     }
 
 }

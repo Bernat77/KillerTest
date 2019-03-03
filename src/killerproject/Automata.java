@@ -34,7 +34,7 @@ public class Automata extends Alive {
         x = (int) (kg.getViewer().getWidth() / 2 * Math.random());
         y = (int) (kg.getViewer().getHeight() / 2 * Math.random());
 
-        hitbox = new Rectangle((int)x, (int)y, WIDTH, HEIGHT);
+        hitbox = new Rectangle((int) x, (int) y, WIDTH, HEIGHT);
 
         this.color = color;
 
@@ -56,14 +56,15 @@ public class Automata extends Alive {
 
     @Override
     public void move() {
+       
+        double timedif = (System.nanoTime() - time) / 10000000d;
+        kg.checkColision(this);
 
-        double culo = (System.nanoTime()-time)/10000000d;
-        
-        x += dx * culo;
-        y += dy * culo;
+        x += dx * timedif;
+        y += dy * timedif;
 
         updateHitBox();
-        kg.checkColision(this);
+
         time = System.nanoTime();
 
     }
@@ -71,7 +72,7 @@ public class Automata extends Alive {
     @Override
     public void draw(Graphics g) {
         g.setColor(color);
-        g.fillOval((int)x, (int)y, HEIGHT, WIDTH);
+        g.fillOval((int) x, (int) y, HEIGHT, WIDTH);
         g.drawString("X: " + x + " Y: " + y, 20, 20);
         if (dx < 0) {
             g.setColor(Color.green);
@@ -86,11 +87,11 @@ public class Automata extends Alive {
     }
 
     public void updateHitBox() {
-        hitbox.setBounds((int)x, (int)y, WIDTH, HEIGHT);
+        hitbox.setBounds((int) x, (int) y, WIDTH, HEIGHT);
     }
 
     public Rectangle nextMove() {
-        return new Rectangle((int)x + (int) dx, (int)y + (int) dy, WIDTH, HEIGHT);
+        return new Rectangle((int) x + (int) dx, (int) y + (int) dy, WIDTH, HEIGHT);
     }
 
     public void collision() {

@@ -19,16 +19,17 @@ public class KillerServer implements Runnable {
 
     private KillerGame killergame;
 
-    private static final int PORT = 8000;
+    private final int PORT;
     private Socket clientSock;
     private ServerSocket serverSocket;
 
     private BufferedReader in;
     private PrintWriter out;
 
-    public KillerServer(KillerGame kg) {
+    public KillerServer(KillerGame kg, int PORT) {
 
         killergame = kg;
+        this.PORT = PORT;
 
         try {
             serverSocket = new ServerSocket(PORT);
@@ -43,7 +44,7 @@ public class KillerServer implements Runnable {
 
         while (true) {
             try {
-                System.out.println("Waiting for a client......");
+                System.out.println("Waiting for a connection......");
                 contact();
             } catch (IOException ex) {
 
@@ -56,59 +57,8 @@ public class KillerServer implements Runnable {
 
         clientSock = serverSocket.accept();
         System.out.println("Connection from " + clientSock.getInetAddress().getHostAddress());
-        new Thread(new KillerPad(clientSock, clientSock.getInetAddress().getHostAddress(), killergame)).start();
-        
+        new Thread(new ConnectionHandler(clientSock, clientSock.getInetAddress().getHostAddress(), killergame)).start();
 
-    }
-
-    public void processClient(BufferedReader in, PrintWriter out) {
-        boolean done = false;
-        String line;
-        while (!done) {
-            try {
-                line = in.readLine();
-                if (line != null) {
-                    if (line.trim().equals("bye")) {
-                        done = true;
-                    } else {
-                        request(line);
-                    }
-                } else {
-                    done = true;
-                }
-
-            } catch (IOException ex) {
-
-            }
-        }
-
-    }
-
-    public void request(String msg) {
-        Controlled contr = null;
-
-        if (msg.trim().equals("act")) {
-             ArrayList<?> arr = this.killergame.getObjects();
-
-            for (int i = 0; i < arr.size(); i++) {
-                if (arr.get(i) instanceof Controlled) {
-                    contr = (Controlled) arr.get(i);
-                }
-
-            }
-            contr.shoot();
-
-        } else {
-            ArrayList<?> arr = this.killergame.getObjects();
-
-            for (int i = 0; i < arr.size(); i++) {
-                if (arr.get(i) instanceof Controlled) {
-                    contr = (Controlled) arr.get(i);
-                }
-
-            }
-            contr.setDirections(msg);
-        }
     }
 
 }
