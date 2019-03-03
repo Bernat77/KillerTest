@@ -163,6 +163,8 @@ public class KillerGame extends JFrame {
     public void startServer() {
         server = new KillerServer(this, SERVERPORT);
         new Thread(server).start();
+        new Thread(nk).start();
+        new Thread(pk).start();
         nk.startClient();
         pk.startClient();
 
@@ -176,8 +178,9 @@ public class KillerGame extends JFrame {
     }
 
     public void frame() {
-        setSize(new Dimension(800, 740));
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setSize(new Dimension(1000, 740));
+        setResizable(false);
+        //setExtendedState(JFrame.MAXIMIZED_BOTH);
         //setUndecorated(true);
         getContentPane().add(viewer = new Viewer(this));
         viewer.images();

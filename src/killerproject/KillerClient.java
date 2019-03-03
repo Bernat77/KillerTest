@@ -18,7 +18,6 @@ import java.util.logging.Logger;
  */
 public class KillerClient implements Runnable {
 
-    private Socket sock;
     private VisualHandler visual;
 
     public KillerClient() {
@@ -33,23 +32,19 @@ public class KillerClient implements Runnable {
     public void run() {
 
         while (true) {
-            sock = visual.getSock();
-            while (sock == null && visual.getIp() != null && visual.getOriginport() != 0) {
+            if (visual.getSock() == null && visual.getIp() != null && visual.getOriginport() != 0) {
                 try {
-                    sock = new Socket(visual.getIp(), visual.getOriginport());
+                    Socket sock = new Socket(visual.getIp(), visual.getOriginport());
                     contact(sock);
                     visual.setSock(sock);
                     System.out.println("setteado por cliente");
 
                 } catch (IOException ex) {
                 }
-
-                try {
-                    
-                    Thread.sleep(200);
-                } catch (InterruptedException ex) {
-                }
-
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
             }
         }
     }

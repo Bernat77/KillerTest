@@ -38,6 +38,45 @@ public class VisualHandler implements Runnable {
 
     @Override
     public void run() {
+        while (true) {
+            try {
+                if (sock != null) {
+                    processMessage(in, out);
+                }
+                Thread.sleep(200);
+            } catch (InterruptedException ex) {
+
+            }
+        }
+
+    }
+
+    public void processMessage(BufferedReader in, PrintWriter out) {
+        boolean done = false;
+        String line;
+
+        while (!done) {
+            try {
+                line = in.readLine();
+                if (line != null) {
+                    request(line);
+                }
+
+            } catch (IOException ex) {
+                done = true;
+                try {
+                    sock.close();
+                    sock = null;
+                } catch (IOException ex1) {
+
+                }
+
+            }
+
+        }
+    }
+
+    public void request(String line) {
 
     }
 
@@ -51,6 +90,7 @@ public class VisualHandler implements Runnable {
 
     public synchronized void setSock(Socket sock) {
         this.sock = sock;
+        this.ip = sock.getInetAddress().getHostAddress();
         try {
             in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
             out = new PrintWriter(sock.getOutputStream(), true);
