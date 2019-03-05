@@ -39,8 +39,6 @@ public class VisualHandler implements Runnable {
         this.right = right;
         killergame = kg;
         ok = false;
-        time = 0;
-
     }
 
     @Override

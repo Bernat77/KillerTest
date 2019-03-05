@@ -46,7 +46,7 @@ public class KillerClient implements Runnable {
                 try {
                     visual.getOut().println("vabien?");
                     System.out.println(System.currentTimeMillis() - visual.time);
-                    if (System.currentTimeMillis() - visual.time >= 2500) {
+                    if (System.currentTimeMillis() - visual.time >= 5500) {
                         visual.nullSocket();
                     }
                 } catch (Exception e) {
@@ -54,7 +54,7 @@ public class KillerClient implements Runnable {
                 }
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(500);
             } catch (InterruptedException ex) {
             }
         }
