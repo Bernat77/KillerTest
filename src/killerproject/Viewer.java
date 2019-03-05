@@ -40,7 +40,6 @@ public class Viewer extends Canvas implements Runnable {
         setBackground(Color.WHITE);
         setFocusable(true);
         requestFocus();
-      
 
     }
 
@@ -82,6 +81,52 @@ public class Viewer extends Canvas implements Runnable {
 
         for (int i = 0; i < killer.getObjects().size(); i++) {
             killer.getObjects().get(i).draw(g);
+        }
+        drawConnectionInfo(g);
+
+    }
+
+    public void drawConnectionInfo(Graphics g) {
+
+        double height = (int) getHeight() / 20;
+
+        g.setColor(Color.white);
+
+        g.drawString("Local IP: " + killer.getIplocal(),
+                (int) (getWidth() * 0.45), (int) height);
+        g.drawString("PORT: " + killer.getSERVERPORT(),
+                (int) (getWidth() * 0.45), (int) height + 16);
+
+        g.drawString("Previous - IP: " + killer.getPk().getIp(),
+                (int) (getWidth() * 0.1), (int) height);
+        g.drawString("PORT: " + killer.getPk().getOriginport(),
+                (int) (getWidth() * 0.1), (int) height + 16);
+
+        if (killer.getPk().getSock() != null) {
+            g.setColor(Color.green);
+            g.drawString("CONNECTED", (int) (getWidth() * 0.1),
+                    (int) height + 32);
+        } else {
+            g.setColor(Color.red);
+            g.drawString("DISCONNECTED", (int) (getWidth() * 0.1),
+                    (int) height + 32);
+        }
+
+        g.setColor(Color.white);
+
+        g.drawString("Next - IP: " + killer.getNk().getIp(),
+                (int) (getWidth() * 0.8), (int) height);
+        g.drawString("PORT: " + killer.getNk().getOriginport(),
+                (int) (getWidth() * 0.8), (int) height + 16);
+
+        if (killer.getNk().getSock() != null) {
+            g.setColor(Color.green);
+            g.drawString("CONNECTED", (int) (getWidth() * 0.8),
+                    (int) height + 32);
+        } else {
+            g.setColor(Color.red);
+            g.drawString("DISCONNECTED", (int) (getWidth() * 0.8),
+                    (int) height + 32);
         }
 
     }

@@ -64,7 +64,7 @@ public class VisualHandler implements Runnable {
                 line = in.readLine();
 
                 if (line != null) {
-                  //  System.out.println(line);
+                    //  System.out.println(line);
                     request(line);
                 }
 
@@ -94,17 +94,51 @@ public class VisualHandler implements Runnable {
 
         if (status.equals("r")) {
             System.out.println("R!!");
-            if (!(ipmsg.equals(killergame.getIplocal())) || !(portmsg.equals(killergame.getSERVERPORT()))) {
+//
+//            if ((portmsg.equals(killergame.getSERVERPORT()))) {
+//                //if ((ipmsg.equals(killergame.getIplocal()))) {
+//                if (info[0].trim().equals("kpad")) {
+//
+//                    String kpid = info[1].trim();
+//                    KillerPad.sendMessageToPad("notfound", killergame, kpid, ipmsg);
+//
+//                } else if (info[0].trim().equals("topad")) {
+//
+//                    String kpid = info[1].trim();
+//                    KillerPad.sendMessageToPad("notfound", killergame, kpid, ipmsg);
+//
+//                }
+//              }
+
+            if (!(portmsg.equals(killergame.getSERVERPORT()))
+                    || !(portmsg.equals(killergame.getIplocal()))) {
                 if (info[0].trim().equals("kpad")) {
-                    System.out.println("kpadmetodo1");
+
                     String kpid = info[1].trim();
                     String kpmsg = info[2].trim();
                     KillerPad.request(kpmsg, killergame, kpid, ipmsg);
+
                 } else if (info[0].trim().equals("topad")) {
+
                     String kpid = info[1].trim();
                     String kpmsg = info[2].trim();
 
+                    KillerPad.sendMessageToPad(kpmsg, killergame, kpid, ipmsg);
+
+                } else if (info[0].trim().equals("tovisual")) {
+
+                    String kpid = info[1].trim();
+                    String kpmsg = info[2].trim();
+
+                    if (kpmsg.equals("death")) {
+                        KillerPad.lifeShip(kpmsg, killergame, kpid, ipmsg, true);
+                    } else if (kpmsg.equals("replay")) {
+                        KillerPad.lifeShip(kpmsg, killergame, kpid, ipmsg, true);
+                    } else if (kpmsg.equals("remove")) {
+                        KillerPad.removeShip(kpmsg, killergame, kpid, ipmsg);
+                    }
                 }
+
             }
 
         } else if (status.equals("d")) {
@@ -130,8 +164,10 @@ public class VisualHandler implements Runnable {
 
                 if (dir.equals("right")) {
                     contr.x = killergame.getViewer().getWidth() - contr.WIDTH / 2;
+                    contr.right = false;
                 } else if (dir.equals("left")) {
                     contr.x = -contr.WIDTH / 2;
+                    contr.right = true;
                 }
 
                 if (axisX == 1) {
@@ -281,6 +317,10 @@ public class VisualHandler implements Runnable {
 
     }
 
+    public String notifyVisual(String msg, String idkp) {
+        return ("tovisual/" + idkp + "/" + msg);
+    }
+
     public void startClient() {
         new Thread(this.kc).start();
     }
@@ -318,8 +358,8 @@ public class VisualHandler implements Runnable {
     }
 
     public void setIp(String ip) {
-            this.ip = ip;
-        
+        this.ip = ip;
+
     }
 
     public KillerGame getKillergame() {
@@ -367,7 +407,7 @@ public class VisualHandler implements Runnable {
     }
 
     public void setOriginport(int originport) {
-            this.originport = originport;
+        this.originport = originport;
     }
 
 }

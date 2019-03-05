@@ -56,7 +56,7 @@ public class KillerClient implements Runnable {
         }
 
         PrintWriter out = new PrintWriter(sock.getOutputStream(), true);
-        out.println("from:V/" + dir + "/" + visual.getKillergame().getSERVERPORT());
+        out.println("fromV:" + dir + "&" + visual.getKillergame().getSERVERPORT());
 
     }
 

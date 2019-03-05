@@ -28,7 +28,7 @@ public class Automata extends Alive {
         HEIGHT = 30;
         WIDTH = 30;
 
-        speed = 5;
+        speed = 0.2;
         dx = speed;
         dy = speed;
         x = (int) (kg.getViewer().getWidth() / 2 * Math.random());
@@ -73,16 +73,6 @@ public class Automata extends Alive {
     public void draw(Graphics g) {
         g.setColor(color);
         g.fillOval((int) x, (int) y, HEIGHT, WIDTH);
-        g.drawString("X: " + x + " Y: " + y, 20, 20);
-        if (dx < 0) {
-            g.setColor(Color.green);
-        }
-        g.drawString("dx: " + dx, 20, 40);
-        g.setColor(color);
-        if (dy < 0) {
-            g.setColor(Color.green);
-        }
-        g.drawString("dx: " + dy, 60, 40);
         // g.drawImage(,x, y,null);
     }
 
@@ -101,6 +91,7 @@ public class Automata extends Alive {
 
     public void death() {
         alive = false;
+        kg.getObjects().remove(this);
     }
 
 }

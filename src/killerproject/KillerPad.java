@@ -26,15 +26,14 @@ public class KillerPad implements Runnable {
     KillerGame killergame;
     BufferedReader in;
     PrintWriter out;
-    Controlled player;
 
     boolean death;
 
-    public KillerPad(Socket sock, String ip, KillerGame killergame, String user) {
+    public KillerPad(Socket sock, String ip, KillerGame killergame, String user, String color) {
         this.sock = sock;
         this.ip = ip;
         this.killergame = killergame;
-        player = new Controlled(killergame, Color.yellow, ip, user);
+        Controlled player = new Controlled(killergame, Color.yellow, ip, user);
         killergame.getObjects().add(player);
         killergame.getKpads().add(this);
         new Thread(player).start();
@@ -47,8 +46,7 @@ public class KillerPad implements Runnable {
             out = new PrintWriter(sock.getOutputStream(), true);
             processClient(in, out);
             sock.close();
-            player.death();
-            killergame.getObjects().remove(player);
+            removeShip("death", killergame, ip, ip);
             System.out.println(ip + " connection closed");
 
         } catch (IOException ex) {
@@ -64,7 +62,7 @@ public class KillerPad implements Runnable {
             try {
                 line = in.readLine();
                 if (line != null) {
-                    if (line.trim().equals("pad:bye")) {
+                    if (line.trim().equals("bye")) {
                         done = true;
                     } else {
                         request(line, killergame, ip, killergame.getIplocal());
@@ -82,39 +80,123 @@ public class KillerPad implements Runnable {
 
     public static void request(String msg, KillerGame kg, String ipShip, String ipOrig) {
 
-        if (msg.substring(0, 3).equals("pad")) {
+        System.out.println(msg);
 
-            Controlled player = null;
+        Controlled player = null;
 
-            for (int i = 0; i < kg.getObjects().size(); i++) {
-                if (kg.getObjects().get(i) instanceof Controlled) {
-                    Controlled temporal = (Controlled) kg.getObjects().get(i);
-                    if (temporal.getIp().equals(ipShip)) {
-                        player = temporal;
-                        System.out.println("la tengo!");
-                    }
+        for (int i = 0; i < kg.getObjects().size(); i++) {
+            if (kg.getObjects().get(i) instanceof Controlled) {
+                Controlled temporal = (Controlled) kg.getObjects().get(i);
+                if (temporal.getIp().equals(ipShip)) {
+                    player = temporal;
+                    System.out.println("la tengo!");
                 }
             }
+        }
 
-            String line = msg.trim().split(":")[1];
-            if (line.equals("shoot")) {
-                if (player != null) {
+        if (msg.equals("replay")) {
+            if (player != null) {
+                player.setDeath(false);
+            } else {
+                kg.getNk().sendMessage(kg.getNk().sendPadAction(msg, ipShip), "r", ipOrig);
+            }
+        }
+
+        if (msg.equals("death")) {
+            if (player != null) {
+                player.setDeath(true);
+            } else {
+                kg.getNk().sendMessage(kg.getNk().sendPadAction(msg, ipShip), "r", ipOrig);
+            }
+
+        }
+
+        if (msg.equals("shoot")) {
+            if (player != null) {
+                if (!player.isDeath()) {
                     player.shoot();
-                } else {
-                    kg.getNk().sendMessage(kg.getNk().sendPadAction(msg, ipShip), "r", ipOrig);
                 }
             } else {
-                if (player != null) {
-                    player.setDirections(line);
-                } else {
-                    kg.getNk().sendMessage(kg.getNk().sendPadAction(msg, ipShip), "r", ipOrig);
+                kg.getNk().sendMessage(kg.getNk().sendPadAction(msg, ipShip), "r", ipOrig);
+            }
+        } else if (msg.equals("up") || msg.equals("down")
+                || msg.equals("left") || msg.equals("right")
+                || msg.equals("downright") || msg.equals("downleft")
+                || msg.equals("upright") || msg.equals("upleft")
+                || msg.equals("idle")) {
+            if (player != null) {
+                if (!player.isDeath()) {
+                    player.setDirections(msg);
                 }
+            } else {
+                kg.getNk().sendMessage(kg.getNk().sendPadAction(msg, ipShip), "r", ipOrig);
             }
         }
     }
 
-    public void sendMessageToPad(String msg) {
-        out.println(msg);
+    public static void sendMessageToPad(String msg, KillerGame kg, String ipPad, String ipOrig) {
+
+        KillerPad pad = null;
+
+        for (int i = 0; i < kg.getKpads().size(); i++) {
+            if (kg.getKpads().get(i) != null) {
+                KillerPad temporal = kg.getKpads().get(i);
+                if (temporal.ip.equals(ipPad)) {
+                    pad = temporal;
+                    System.out.println("tengo el kpad");
+                }
+            }
+        }
+
+        if (pad != null) {
+            pad.out.println(msg);
+        } else {
+            kg.getNk().sendMessage(kg.getNk().notifyPad(msg, ipPad), "r", ipOrig);
+        }
+
+    }
+
+    public static void lifeShip(String msg, KillerGame kg, String ipShip, String ipOrig, boolean life) {
+
+        Controlled player = null;
+
+        for (int i = 0; i < kg.getObjects().size(); i++) {
+            if (kg.getObjects().get(i) instanceof Controlled) {
+                Controlled temporal = (Controlled) kg.getObjects().get(i);
+                if (temporal.getIp().equals(ipShip)) {
+                    player = temporal;
+                }
+            }
+        }
+
+        if (player != null) {
+            player.setDeath(life);
+            player.stop();
+        } else {
+            kg.getNk().notifyVisual(msg, ipShip);
+        }
+    }
+
+    public static void removeShip(String msg, KillerGame kg, String ipShip, String ipOrig) {
+
+        Controlled player = null;
+
+        for (int i = 0; i < kg.getObjects().size(); i++) {
+            if (kg.getObjects().get(i).kg.getObjects().get(i) instanceof Controlled) {
+                Controlled temporal = (Controlled) kg.getObjects().get(i);
+                if (temporal.getIp().equals(ipShip)) {
+                    player = temporal;
+                }
+            }
+        }
+
+        if (player != null) {
+            player.death();
+            kg.getObjects().remove(player);
+        } else {
+            kg.getNk().notifyVisual(msg, ipShip);
+
+        }
     }
 
     public Socket getSock() {

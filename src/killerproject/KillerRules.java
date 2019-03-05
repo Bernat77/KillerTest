@@ -19,8 +19,20 @@ public class KillerRules {
 
     public static void collisionAlive(Alive obj1, Alive obj2) {
 
-        obj1.collision();
-        obj2.collision();
+//        obj1.collision();
+//        obj2.collision();
+
+        if (obj1 instanceof Controlled) {
+            ((Controlled) obj1).kill();
+        } else {
+            obj1.death();
+        }
+
+        if (obj2 instanceof Controlled) {
+            ((Controlled) obj2).kill();
+        } else {
+            obj2.death();
+        }
 
     }
 

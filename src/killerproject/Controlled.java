@@ -23,6 +23,8 @@ public class Controlled extends Alive {
     boolean wup, wdown, wright, wleft;
     private ArrayList<Shoot> shoots = new ArrayList();
 
+    private boolean death;
+
     public Controlled(KillerGame kg, Color color, String ip, String user) {
         this.kg = kg;
         this.ip = ip;
@@ -49,6 +51,7 @@ public class Controlled extends Alive {
         //estados
         fright = true;
         alive = true;
+        death = false;
 
         wup = false;
         wdown = false;
@@ -91,6 +94,13 @@ public class Controlled extends Alive {
 
     }
 
+    public void stop() {
+        up = false;
+        down = false;
+        right = false;
+        left = false;
+    }
+
     @Override
     public void collision() {
 
@@ -98,7 +108,16 @@ public class Controlled extends Alive {
 
     public void death() {
         alive = false;
+    }
 
+    public void kill() {
+        System.out.println(ip);
+        KillerPad.lifeShip("death", kg, ip, kg.getIplocal(), true);
+        KillerPad.sendMessageToPad("ded", kg, ip, kg.getIplocal());
+    }
+
+    public void restart() {
+        KillerPad.lifeShip("replay", kg, ip, kg.getIplocal(), false);
     }
 
     public Rectangle nextMove() {
@@ -114,30 +133,30 @@ public class Controlled extends Alive {
     public void checkMove() {
         if (up && !wup) {
             dy = -speed;
-             if(wdown){
+            if (wdown) {
                 wdown = false;
             }
         }
         if (down && !wdown) {
             dy = speed;
-            
-             if(wup){
+
+            if (wup) {
                 wup = false;
             }
         }
         if (right && !wright) {
             dx = speed;
             fright = true;
-            
-             if(wleft){
+
+            if (wleft) {
                 wleft = false;
             }
         }
         if (left && !wleft) {
             dx = -speed;
             fright = false;
-            
-            if(wright){
+
+            if (wright) {
                 wright = false;
             }
         }
@@ -212,10 +231,13 @@ public class Controlled extends Alive {
 
     @Override
     public void draw(Graphics g) {
-        g.setColor(color);
-        g.drawString(user, (int) x, (int) y - (HEIGHT / 2));
-        g.fillOval((int) x, (int) y, HEIGHT, WIDTH);
-        drawShoots(g);
+        if (!death) {
+            g.setColor(Color.WHITE);
+            g.drawString(user, (int) x, (int) y - (HEIGHT / 2));
+            g.setColor(color);
+            g.fillOval((int) x, (int) y, HEIGHT, WIDTH);
+            drawShoots(g);
+        }
         // g.drawImage(,x, y,null);
     }
 
@@ -287,7 +309,12 @@ public class Controlled extends Alive {
         this.wleft = wleft;
     }
 
-    
-    
+    public boolean isDeath() {
+        return death;
+    }
+
+    public void setDeath(boolean death) {
+        this.death = death;
+    }
 
 }

@@ -47,8 +47,8 @@ public class KillerGame extends JFrame {
     JTextField ipprev;
     JTextField portprev;
 
-    int frameW = 400;
-    int frameH = 400;
+    int frameW = 900;
+    int frameH = 700;
 
     public KillerGame() {
         portFrame();
@@ -315,7 +315,6 @@ public class KillerGame extends JFrame {
             if (objCol instanceof Alive) {
                 if (obj.hitbox.intersects(((Alive) objCol).hitbox)) {
                     KillerRules.collisionShoot(obj, (Alive) objCol);
-                    objects.remove(i);
 
                 }
 

@@ -33,8 +33,11 @@ public class ConnectionHandler implements Runnable {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String line = in.readLine();
-            String[] data = line.split("/");
-            if (data[0].split(":")[1].equals("P")) {
+            
+            
+            String[] data = line.split(":");
+            
+            if (data[0].equals("fromPnew")) {
 
 //                KillerPad kp = null;
 //                for (int i = 0; i < this.kg.getKpads().size(); i++) {
@@ -45,17 +48,22 @@ public class ConnectionHandler implements Runnable {
 //                if (kp != null) {
 //                    kp.setSock(socket);
 //                } else {
-                new Thread(new KillerPad(socket, ip, kg, data[1].split(":")[1])).start();
 
-            } else if (data[0].split(":")[1].equals("V")) {
+                String[] info = data[1].split("&");
+
+                new Thread(new KillerPad(socket, ip, kg,info[0],info[1])).start();
+
+            } else if (data[0].equals("fromV")) {
+                String[] info = data[1].split("&");
+                
                 VisualHandler visual = null;
-                if (data[1].equals("L")) {
+                if (info[0].equals("L")) {
                     visual = kg.getNk();
-                } else if (data[1].equals("R")) {
+                } else if (info[0].equals("R")) {
                     visual = kg.getPk();
                 }
                 visual.setSock(socket);
-                visual.setOriginport(Integer.parseInt(data[2]));
+                visual.setOriginport(Integer.parseInt(info[1]));
                 System.out.println("setteado por server");
             }
         } catch (IOException ex) {
