@@ -41,6 +41,15 @@ public class KillerClient implements Runnable {
 
                 } catch (IOException ex) {
                 }
+            } else if (visual.getSock() != null) {
+                try {
+                    visual.getOut().println("vabien?");
+                    if (System.currentTimeMillis() - visual.time > 2500) {
+                        visual.nullSocket();
+                    }
+                } catch (Exception e) {
+
+                }
             }
             try {
                 Thread.sleep(1000);

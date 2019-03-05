@@ -32,11 +32,14 @@ public class VisualHandler implements Runnable {
     private boolean right;
     private boolean ok;
 
+    long time;
+
     public VisualHandler(KillerGame kg, boolean right) {
         kc = new KillerClient(this);
         this.right = right;
         killergame = kg;
         ok = false;
+        time = 0;
 
     }
 
@@ -47,6 +50,7 @@ public class VisualHandler implements Runnable {
                 if (sock != null && ok) {
 
                     processMessage(in, out);
+
                 }
                 Thread.sleep(200);
             } catch (InterruptedException ex) {
@@ -61,23 +65,32 @@ public class VisualHandler implements Runnable {
 
         while (!done) {
             try {
-                line = in.readLine();
 
+                line = in.readLine();
                 if (line != null) {
                     //  System.out.println(line);
                     request(line);
                 }
+                if (line.equals("vabien?")) {
+                    out.println("ok");
+                } else if (line.equals("ok")) {
+                    time = System.currentTimeMillis();
+                }
 
             } catch (IOException ex) {
                 done = true;
-                try {
-                    sock.close();
-                    sock = null;
-                } catch (IOException ex1) {
-
-                }
-
+                nullSocket();
             }
+
+        }
+    }
+
+    public void nullSocket() {
+
+        try {
+            sock.close();
+            sock = null;
+        } catch (IOException ex1) {
 
         }
     }
