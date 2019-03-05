@@ -61,4 +61,22 @@ public class KillerServer implements Runnable {
 
     }
 
+    public Socket getClientSock() {
+        return clientSock;
+    }
+
+    public void setClientSock(Socket clientSock) {
+        this.clientSock = clientSock;
+    }
+
+    public ServerSocket getServerSocket() {
+        return serverSocket;
+    }
+
+    public void setServerSocket(ServerSocket serverSocket) {
+        this.serverSocket = serverSocket;
+    }
+    
+    
+
 }

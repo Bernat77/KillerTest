@@ -35,13 +35,24 @@ public class ConnectionHandler implements Runnable {
             String line = in.readLine();
             String[] data = line.split("/");
             if (data[0].split(":")[1].equals("P")) {
+
+//                KillerPad kp = null;
+//                for (int i = 0; i < this.kg.getKpads().size(); i++) {
+//                    if (this.kg.getKpads().get(i).ip.equals(ip)) {
+//                        kp = this.kg.getKpads().get(i);
+//                    }
+//                }
+//                if (kp != null) {
+//                    kp.setSock(socket);
+//                } else {
                 new Thread(new KillerPad(socket, ip, kg, data[1].split(":")[1])).start();
+
             } else if (data[0].split(":")[1].equals("V")) {
                 VisualHandler visual = null;
                 if (data[1].equals("L")) {
-                    visual = kg.getPk();
-                } else if (data[1].equals("R")) {
                     visual = kg.getNk();
+                } else if (data[1].equals("R")) {
+                    visual = kg.getPk();
                 }
                 visual.setSock(socket);
                 visual.setOriginport(Integer.parseInt(data[2]));

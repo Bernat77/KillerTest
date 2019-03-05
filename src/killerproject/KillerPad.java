@@ -26,8 +26,9 @@ public class KillerPad implements Runnable {
     KillerGame killergame;
     BufferedReader in;
     PrintWriter out;
-
     Controlled player;
+
+    boolean death;
 
     public KillerPad(Socket sock, String ip, KillerGame killergame, String user) {
         this.sock = sock;
@@ -35,6 +36,7 @@ public class KillerPad implements Runnable {
         this.killergame = killergame;
         player = new Controlled(killergame, Color.yellow, ip, user);
         killergame.getObjects().add(player);
+        killergame.getKpads().add(this);
         new Thread(player).start();
     }
 
@@ -61,31 +63,71 @@ public class KillerPad implements Runnable {
         while (!done) {
             try {
                 line = in.readLine();
-                System.out.println(line);
                 if (line != null) {
                     if (line.trim().equals("pad:bye")) {
                         done = true;
                     } else {
-                        request(line);
+                        request(line, killergame, ip, killergame.getIplocal());
                     }
                 } else {
                     done = true;
                 }
 
             } catch (IOException ex) {
-
+                done = true;
             }
         }
 
     }
 
-    public void request(String msg) {
+    public static void request(String msg, KillerGame kg, String ipShip, String ipOrig) {
+
         if (msg.substring(0, 3).equals("pad")) {
-            if (msg.trim().split(":")[1].equals("shoot")) {
-                player.shoot();
-            } else {
-                player.setDirections(msg.split(":")[1]);
+
+            Controlled player = null;
+
+            for (int i = 0; i < kg.getObjects().size(); i++) {
+                if (kg.getObjects().get(i) instanceof Controlled) {
+                    Controlled temporal = (Controlled) kg.getObjects().get(i);
+                    if (temporal.getIp().equals(ipShip)) {
+                        player = temporal;
+                        System.out.println("la tengo!");
+                    }
+                }
             }
+
+            String line = msg.trim().split(":")[1];
+            if (line.equals("shoot")) {
+                if (player != null) {
+                    player.shoot();
+                } else {
+                    kg.getNk().sendMessage(kg.getNk().sendPadAction(msg, ipShip), "r", ipOrig);
+                }
+            } else {
+                if (player != null) {
+                    player.setDirections(line);
+                } else {
+                    kg.getNk().sendMessage(kg.getNk().sendPadAction(msg, ipShip), "r", ipOrig);
+                }
+            }
+        }
+    }
+
+    public void sendMessageToPad(String msg) {
+        out.println(msg);
+    }
+
+    public Socket getSock() {
+        return sock;
+    }
+
+    public void setSock(Socket sock) {
+        this.sock = sock;
+        try {
+            this.in = new BufferedReader(new InputStreamReader(this.sock.getInputStream()));
+            this.out = new PrintWriter(this.sock.getOutputStream(), true);
+        } catch (IOException ex) {
+
         }
     }
 

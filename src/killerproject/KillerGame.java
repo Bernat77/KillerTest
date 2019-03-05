@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+import java.net.*;
 
 /**
  *
@@ -30,6 +31,7 @@ public class KillerGame extends JFrame {
 
     //Comunicaciones
     private KillerServer server;
+    private String iplocal;
     private int SERVERPORT;
     //
     private VisualHandler nk = new VisualHandler(this, true);
@@ -37,6 +39,16 @@ public class KillerGame extends JFrame {
 
     //Gamepad (Móvil)
     private ArrayList<KillerPad> kpads = new ArrayList();
+
+    //JFrame connections
+    JFrame connection;
+    JTextField ipnext;
+    JTextField portnext;
+    JTextField ipprev;
+    JTextField portprev;
+
+    int frameW = 400;
+    int frameH = 400;
 
     public KillerGame() {
         portFrame();
@@ -51,6 +63,7 @@ public class KillerGame extends JFrame {
         portframe.setSize(240, 150);
         Container cp = portframe.getContentPane();
         portframe.getContentPane().setLayout(new GridBagLayout());
+
         GridBagConstraints c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 0;
@@ -88,16 +101,22 @@ public class KillerGame extends JFrame {
         portframe.setResizable(false);
         portframe.setLocationRelativeTo(null);
         portframe.setVisible(true);
+
+        try {
+            iplocal = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException ex) {
+            System.out.println("Error de red..");
+        }
     }
 
     public void ipframe() {
-        JFrame frame = new JFrame("Killer Game: Set IP's");
-        frame.setSize(500, 100);
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        Container cp = frame.getContentPane();
-        frame.getContentPane().setLayout(new GridBagLayout());
+        connection = new JFrame("Killer Game: Set IP's");
+        connection.setSize(500, 100);
+        connection.setLocationRelativeTo(null);
+        connection.setResizable(false);
+        connection.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        Container cp = connection.getContentPane();
+        connection.getContentPane().setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.insets = new Insets(3, 4, 4, 3);
         c.gridx = 0;
@@ -105,28 +124,29 @@ public class KillerGame extends JFrame {
         c.gridheight = 1;
         c.gridwidth = 1;
         JLabel ip1 = new JLabel("IP Previous:");
-        frame.add(ip1, c);
+        connection.add(ip1, c);
         c.gridx = 1;
         JLabel ip2 = new JLabel("PORT:");
-        frame.add(ip2, c);
+        connection.add(ip2, c);
         c.gridx = 3;
         JLabel ip3 = new JLabel("IP Next:");
-        frame.add(ip3, c);
+        connection.add(ip3, c);
         c.gridx = 4;
         JLabel ip4 = new JLabel("PORT:");
-        frame.add(ip4, c);
-        frame.setVisible(true);
+        connection.add(ip4, c);
+        connection.setVisible(true);
+
+        ipprev = new JTextField(10);
+        portprev = new JTextField(5);
+        ipnext = new JTextField(10);
+        portnext = new JTextField(5);
 
         c.gridx = 0;
         c.gridy = 1;
-        JTextField ipnext = new JTextField(10);
-        frame.add(ipnext, c);
-        c.gridx = 1;
-        JTextField portnext = new JTextField(5);
-        frame.add(portnext, c);
 
-        JTextField ipprev = new JTextField(10);
-        JTextField portprev = new JTextField(5);
+        connection.add(ipprev, c);
+        c.gridx = 1;
+        connection.add(portprev, c);
 
         c.gridx = 2;
         c.insets = new Insets(3, 6, 6, 3);
@@ -135,11 +155,15 @@ public class KillerGame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    nk.setIp(ipnext.getText());
-                    nk.setOriginport(Integer.parseInt(portnext.getText()));
+                    if (nk.getIp() == null && nk.getOriginport() == 0) {
+                        nk.setIp(ipnext.getText());
+                        nk.setOriginport(Integer.parseInt(portnext.getText()));
+                    }
                     //
-                    pk.setIp(ipprev.getText());
-                    pk.setOriginport(Integer.parseInt(portprev.getText()));
+                    if (pk.getIp() == null && pk.getOriginport() == 0) {
+                        pk.setIp(ipprev.getText());
+                        pk.setOriginport(Integer.parseInt(portprev.getText()));
+                    }
 
                     // frame.dispose();
                 } catch (Exception ex) {
@@ -150,13 +174,13 @@ public class KillerGame extends JFrame {
         });
 
         start.setSize(100, 100);
-        frame.add(start, c);
+        connection.add(start, c);
 
         c.insets = new Insets(3, 4, 4, 3);
         c.gridx = 3;
-        frame.add(ipprev, c);
+        connection.add(ipnext, c);
         c.gridx = 4;
-        frame.add(portprev, c);
+        connection.add(portnext, c);
 
     }
 
@@ -178,7 +202,7 @@ public class KillerGame extends JFrame {
     }
 
     public void frame() {
-        setSize(new Dimension(1000, 740));
+        setSize(new Dimension(frameW, frameH));
         setResizable(false);
         //setExtendedState(JFrame.MAXIMIZED_BOTH);
         //setUndecorated(true);
@@ -205,10 +229,54 @@ public class KillerGame extends JFrame {
     public void checkColision(Alive obj) {
 
         //colision con limites
-        if ((obj.y + obj.dy) >= viewer.getHeight() - obj.HEIGHT || (obj.y + obj.dy) <= 0) {
-            obj.dy *= -1;
-        } else if ((obj.x + obj.dx) >= viewer.getWidth() - obj.WIDTH || (obj.x + obj.dx) <= 0) {
-            obj.dx *= -1;
+        if (obj instanceof Automata) {
+            if ((obj.y + obj.dy) >= viewer.getHeight() - obj.HEIGHT || (obj.y + obj.dy) <= 0) {
+                obj.dy *= -1;
+            } else if (((obj.x + obj.dx) >= viewer.getWidth() - obj.WIDTH && nk.getSock() == null)
+                    || ((obj.x + obj.dx) <= 0 && pk.getSock() == null)) {
+                System.out.println("choque");
+                obj.dx *= -1;
+
+            } else if ((obj.x + obj.dx) >= viewer.getWidth() - (obj.WIDTH * (1f / 4f)) && nk.getSock() != null) {
+                nk.sendMessage(nk.sendAutomata((Automata) obj, false), "d", iplocal);
+                obj.setAlive(false);
+                objects.remove(obj);
+            } else if ((obj.x + obj.dx) <= (-obj.WIDTH * (3f / 4f)) && pk.getSock() != null) {
+                pk.sendMessage(pk.sendAutomata((Automata) obj, true), "d", iplocal);
+                obj.setAlive(false);
+                objects.remove(obj);
+            }
+
+        } else if (obj instanceof Controlled) {
+            if ((obj.y + obj.dy) >= viewer.getHeight() - obj.HEIGHT) {
+                ((Controlled) obj).setWdown(true);
+                System.out.println(obj.x + obj.dx);
+            } else if (obj.y + obj.dy <= 0) {
+                ((Controlled) obj).setWup(true);
+                System.out.println(obj.x + obj.dx);
+            }
+
+            if ((obj.x + obj.dx) >= viewer.getWidth() - obj.WIDTH && nk.getSock() == null) {
+                ((Controlled) obj).setWright(true);
+                System.out.println("pum al lado der");
+            } else if ((obj.x + obj.dx) >= viewer.getWidth() - (obj.WIDTH * (1f / 4f)) && nk.getSock() != null) {
+                System.out.println("por la derecha!");
+                nk.sendMessage(nk.sendPlayer((Controlled) obj, false), "d", iplocal);
+                obj.setAlive(false);
+                objects.remove(obj);
+            }
+
+            if ((obj.x + obj.dx) <= 0 && pk.getSock() == null) {
+                ((Controlled) obj).setWleft(true);
+                System.out.println("pum al lado izq");
+
+            } else if ((obj.x + obj.dx) <= 0 - obj.WIDTH * (3f / 4f) && pk.getSock() != null) {
+                System.out.println("por la izquierda!");
+                pk.sendMessage(pk.sendPlayer((Controlled) obj, true), "d", iplocal);
+                obj.setAlive(false);
+                objects.remove(obj);
+            }
+
         }
 
         for (int i = 0; i < objects.size(); i++) {
@@ -254,6 +322,23 @@ public class KillerGame extends JFrame {
             }
 
         }
+    }
+
+    public void createControlled(Controlled contr) {
+
+        objects.add(contr);
+        new Thread(contr).start();
+
+    }
+
+    public void createAutomata(Automata auto) {
+        objects.add(auto);
+        new Thread(auto).start();
+
+    }
+
+    public void createShoot(Shoot shoot) {
+
     }
 
     public Viewer getViewer() {
@@ -302,6 +387,54 @@ public class KillerGame extends JFrame {
 
     public void setKpads(ArrayList<KillerPad> kpads) {
         this.kpads = kpads;
+    }
+
+    public JFrame getConnection() {
+        return connection;
+    }
+
+    public void setConnection(JFrame connection) {
+        this.connection = connection;
+    }
+
+    public JTextField getIpnext() {
+        return ipnext;
+    }
+
+    public void setIpnext(JTextField ipnext) {
+        this.ipnext = ipnext;
+    }
+
+    public JTextField getPortnext() {
+        return portnext;
+    }
+
+    public void setPortnext(JTextField portnext) {
+        this.portnext = portnext;
+    }
+
+    public JTextField getIpprev() {
+        return ipprev;
+    }
+
+    public void setIpprev(JTextField ipprev) {
+        this.ipprev = ipprev;
+    }
+
+    public JTextField getPortprev() {
+        return portprev;
+    }
+
+    public void setPortprev(JTextField portprev) {
+        this.portprev = portprev;
+    }
+
+    public String getIplocal() {
+        return iplocal;
+    }
+
+    public void setIplocal(String iplocal) {
+        this.iplocal = iplocal;
     }
 
 }

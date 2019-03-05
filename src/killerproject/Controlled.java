@@ -20,6 +20,7 @@ public class Controlled extends Alive {
     String user;
     boolean up, down, right, left;
     boolean fright;
+    boolean wup, wdown, wright, wleft;
     private ArrayList<Shoot> shoots = new ArrayList();
 
     public Controlled(KillerGame kg, Color color, String ip, String user) {
@@ -33,6 +34,7 @@ public class Controlled extends Alive {
 
         this.color = color;
 
+        //tamaño hitbox
         hitbox = new Rectangle((int) x, (int) y, WIDTH, HEIGHT);
 
         //movimiento y posición
@@ -40,11 +42,19 @@ public class Controlled extends Alive {
         dy = 0;
         speed = 3.1;
 
+        //posicion aleatoria en el espacio del canvas
         x = (int) (kg.getViewer().getWidth() / 2 * Math.random());
         y = (int) (kg.getViewer().getHeight() / 2 * Math.random());
 
+        //estados
         fright = true;
+        alive = true;
 
+        wup = false;
+        wdown = false;
+        wleft = false;
+        wright = false;
+        //tiempo
         time = System.nanoTime();
 
     }
@@ -69,7 +79,6 @@ public class Controlled extends Alive {
 
         kg.checkColision(this);
         checkMove();
-
         x += dx * timedif;
         y += dy * timedif;
 
@@ -103,19 +112,34 @@ public class Controlled extends Alive {
     }
 
     public void checkMove() {
-        if (up) {
+        if (up && !wup) {
             dy = -speed;
+             if(wdown){
+                wdown = false;
+            }
         }
-        if (down) {
+        if (down && !wdown) {
             dy = speed;
+            
+             if(wup){
+                wup = false;
+            }
         }
-        if (right) {
+        if (right && !wright) {
             dx = speed;
             fright = true;
+            
+             if(wleft){
+                wleft = false;
+            }
         }
-        if (left) {
+        if (left && !wleft) {
             dx = -speed;
             fright = false;
+            
+            if(wright){
+                wright = false;
+            }
         }
     }
 
@@ -123,64 +147,6 @@ public class Controlled extends Alive {
 
         String dir = direction.trim().toLowerCase();
 
-//        if (direction.trim().equalsIgnoreCase("up")) {
-//            up = true;
-//            down = false;
-//            right = false;
-//            left = false;
-//
-//        } else if (direction.trim().equalsIgnoreCase("upright")) {
-//            up = true;
-//            down = false;
-//            right = true;
-//            left = false;
-//
-//        } else if (direction.trim().equalsIgnoreCase("upleft")) {
-//            up = true;
-//            down = false;
-//            right = false;
-//            left = true;
-//
-//        } else if (direction.trim().equalsIgnoreCase("left")) {
-//            up = false;
-//            down = false;
-//            right = false;
-//            left = true;
-//
-//        } else if (direction.trim().equalsIgnoreCase("right")) {
-//
-//            up = false;
-//            down = false;
-//            right = true;
-//            left = false;
-//
-//        } else if (direction.trim().equalsIgnoreCase("down")) {
-//
-//            up = false;
-//            down = true;
-//            right = false;
-//            left = false;
-//
-//        } else if (direction.trim().equalsIgnoreCase("downleft")) {
-//
-//            up = false;
-//            down = true;
-//            right = false;
-//            left = true;
-//
-//        } else if (direction.trim().equalsIgnoreCase("downright")) {
-//
-//            up = false;
-//            down = true;
-//            right = true;
-//            left = false;
-//
-//        } else {
-//            up = false;
-//            down = false;
-//            right = false;
-//            left = false;
-//        }
         switch (dir) {
             case "up":
                 up = true;
@@ -236,7 +202,6 @@ public class Controlled extends Alive {
                 right = false;
                 left = false;
                 break;
-
         }
 
     }
@@ -289,5 +254,40 @@ public class Controlled extends Alive {
     public void setShoots(ArrayList<Shoot> shoots) {
         this.shoots = shoots;
     }
+
+    public boolean isWup() {
+        return wup;
+    }
+
+    public void setWup(boolean wup) {
+        this.wup = wup;
+    }
+
+    public boolean isWdown() {
+        return wdown;
+    }
+
+    public void setWdown(boolean wdown) {
+        this.wdown = wdown;
+    }
+
+    public boolean isWright() {
+        return wright;
+    }
+
+    public void setWright(boolean wright) {
+        this.wright = wright;
+    }
+
+    public boolean isWleft() {
+        return wleft;
+    }
+
+    public void setWleft(boolean wleft) {
+        this.wleft = wleft;
+    }
+
+    
+    
 
 }

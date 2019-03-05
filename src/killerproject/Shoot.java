@@ -30,7 +30,7 @@ public class Shoot extends Automata implements Runnable {
         this.y = ship.getY() + (this.radius / 2);
         hitbox = new Rectangle((int) this.x, (int) this.y, this.radius, this.radius);
         this.frightdir = ship.fright;
-        this.speed = 12;
+        this.speed = 15;
         alive = true;
 
     }
@@ -119,5 +119,22 @@ public class Shoot extends Automata implements Runnable {
     public void setHitbox(Rectangle hitbox) {
         this.hitbox = hitbox;
     }
+
+    public Controlled getShip() {
+        return ship;
+    }
+
+    public void setShip(Controlled ship) {
+        this.ship = ship;
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+    
 
 }
