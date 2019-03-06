@@ -73,6 +73,7 @@ public class VisualHandler implements Runnable {
             } catch (IOException ex) {
                 done = true;
                 nullSocket();
+                System.out.println("tuputamadre");
             }
 
         }
@@ -83,7 +84,7 @@ public class VisualHandler implements Runnable {
         try {
             sock.close();
             sock = null;
-        } catch (IOException ex1) {
+        } catch (Exception ex1) {
 
         }
     }
@@ -233,6 +234,10 @@ public class VisualHandler implements Runnable {
 
     }
 
+    public void alert(String msg) {
+        out.println(msg);
+    }
+
     public void sendMessage(String info, String status, String ip) {
 
         String iptosend = null;
@@ -361,6 +366,7 @@ public class VisualHandler implements Runnable {
                 killergame.getPortprev().setEnabled(false);
                 killergame.getIpprev().setText("Connected!");
             }
+            time = System.currentTimeMillis();
 
         } catch (IOException ex) {
 
