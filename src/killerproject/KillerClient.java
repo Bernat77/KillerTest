@@ -43,12 +43,10 @@ public class KillerClient implements Runnable {
                 }
             } else if (visual.getSock() != null) {
                 try {
-                    System.out.println("vaputobieninutil");
                     visual.alert("vabien?");
-                    System.out.println(System.currentTimeMillis() - visual.time);
                     if (System.currentTimeMillis() - visual.time >= 5500) {
                         visual.nullSocket();
-                    }else{
+                    } else {
                         visual.alert("ok");
                     }
                 } catch (Exception e) {
@@ -56,7 +54,7 @@ public class KillerClient implements Runnable {
                 }
             }
             try {
-                Thread.sleep(500);
+                Thread.sleep(200);
             } catch (InterruptedException ex) {
             }
         }

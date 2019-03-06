@@ -73,7 +73,6 @@ public class VisualHandler implements Runnable {
             } catch (IOException ex) {
                 done = true;
                 nullSocket();
-                System.out.println("tuputamadre");
             }
 
         }
@@ -84,6 +83,8 @@ public class VisualHandler implements Runnable {
         try {
             sock.close();
             sock = null;
+            in = null;
+            out = null;
         } catch (Exception ex1) {
 
         }
@@ -91,8 +92,7 @@ public class VisualHandler implements Runnable {
 
     public void request(String line) {
         //  System.out.println(line);
-        System.out.println(line);
-
+        
         if (line.equals("vabien?")) {
             out.println("ok");
         } else if (line.equals("ok")) {

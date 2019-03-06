@@ -33,29 +33,33 @@ public class ConnectionHandler implements Runnable {
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String line = in.readLine();
-            
-            
+
             String[] data = line.split(":");
-            
+
             if (data[0].equals("fromPnew")) {
 
-//                KillerPad kp = null;
-//                for (int i = 0; i < this.kg.getKpads().size(); i++) {
-//                    if (this.kg.getKpads().get(i).ip.equals(ip)) {
-//                        kp = this.kg.getKpads().get(i);
-//                    }
-//                }
-//                if (kp != null) {
-//                    kp.setSock(socket);
-//                } else {
+                KillerPad kp = null;
+                for (int i = 0; i < this.kg.getKpads().size(); i++) {
+                    if (this.kg.getKpads().get(i).ip.equals(ip)) {
+                        System.out.println("tengo el pad");
+                        kp = this.kg.getKpads().get(i);
+                    }
+                }
+                if (kp != null) {
+                    System.out.println("set");
+                    kp.sock.close();
+                    kp.sock = null;
 
-                String[] info = data[1].split("&");
+                } else {
 
-                new Thread(new KillerPad(socket, ip, kg,info[0],info[1])).start();
+                    String[] info = data[1].split("&");
+
+                    new Thread(new KillerPad(socket, ip, kg, info[0], info[1])).start();
+                }
 
             } else if (data[0].equals("fromV")) {
                 String[] info = data[1].split("&");
-                
+
                 VisualHandler visual = null;
                 if (info[0].equals("L")) {
                     visual = kg.getNk();

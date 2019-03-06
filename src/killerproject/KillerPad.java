@@ -23,16 +23,16 @@ public class KillerPad implements Runnable {
 
     Socket sock;
     String ip;
+    int port;
     KillerGame killergame;
     BufferedReader in;
     PrintWriter out;
-
-    boolean death;
 
     public KillerPad(Socket sock, String ip, KillerGame killergame, String user, String color) {
         this.sock = sock;
         this.ip = ip;
         this.killergame = killergame;
+        port = sock.getPort();
         Controlled player = new Controlled(killergame, Color.yellow, ip, user);
         killergame.getObjects().add(player);
         killergame.getKpads().add(this);
@@ -45,8 +45,8 @@ public class KillerPad implements Runnable {
             in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
             out = new PrintWriter(sock.getOutputStream(), true);
             processClient(in, out);
-            sock.close();
-            removeShip("death", killergame, ip, ip);
+            removeShip("death", killergame, ip, killergame.getIplocal());
+            killergame.getKpads().remove(this);
             System.out.println(ip + " connection closed");
 
         } catch (IOException ex) {
@@ -71,7 +71,7 @@ public class KillerPad implements Runnable {
                     done = true;
                 }
 
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 done = true;
             }
         }
@@ -89,7 +89,6 @@ public class KillerPad implements Runnable {
                 Controlled temporal = (Controlled) kg.getObjects().get(i);
                 if (temporal.getIp().equals(ipShip)) {
                     player = temporal;
-                    System.out.println("la tengo!");
                 }
             }
         }
@@ -143,7 +142,6 @@ public class KillerPad implements Runnable {
                 KillerPad temporal = kg.getKpads().get(i);
                 if (temporal.ip.equals(ipPad)) {
                     pad = temporal;
-                    System.out.println("tengo el kpad");
                 }
             }
         }
