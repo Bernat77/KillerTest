@@ -93,6 +93,11 @@ public class KillerPad implements Runnable {
             }
         }
 
+        if (msg.equals("hola?")) {
+            System.out.println(msg);
+            sendMessageToPad("ok", kg, ipShip, ipOrig);
+        }
+
         if (msg.equals("replay")) {
             if (player != null) {
                 player.setDeath(false);
