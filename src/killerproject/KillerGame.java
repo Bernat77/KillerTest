@@ -257,10 +257,12 @@ public class KillerGame extends JFrame {
                 obj.dx *= -1;
 
             } else if ((obj.x + obj.dx) >= viewer.getWidth() - (obj.WIDTH * (1f / 4f)) && nk.getSock() != null) {
+                System.out.println("send");
                 nk.sendMessage(nk.sendAutomata((Automata) obj, false), "d", iplocal);
                 obj.setAlive(false);
                 objects.remove(obj);
             } else if ((obj.x + obj.dx) <= (-obj.WIDTH * (3f / 4f)) && pk.getSock() != null) {
+                System.out.println("send");
                 pk.sendMessage(pk.sendAutomata((Automata) obj, true), "d", iplocal);
                 obj.setAlive(false);
                 objects.remove(obj);

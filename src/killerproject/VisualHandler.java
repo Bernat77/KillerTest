@@ -95,7 +95,13 @@ public class VisualHandler implements Runnable {
     public void request(String line) {
         //  System.out.println(line);
 
+        if (line.equals("ok")) {
+            out.println("ok");
+             time = System.currentTimeMillis();
+        } else {
+
             String[] params = line.split("&");
+
             String status = params[0];
             String ipmsg = params[1];
             String portmsg = params[2];
@@ -103,6 +109,21 @@ public class VisualHandler implements Runnable {
 
             if (status.equals("r")) {
                 System.out.println("R!!");
+//
+//            if ((portmsg.equals(killergame.getSERVERPORT()))) {
+//                //if ((ipmsg.equals(killergame.getIplocal()))) {
+//                if (info[0].trim().equals("kpad")) {
+//
+//                    String kpid = info[1].trim();
+//                    KillerPad.sendMessageToPad("notfound", killergame, kpid, ipmsg);
+//
+//                } else if (info[0].trim().equals("topad")) {
+//
+//                    String kpid = info[1].trim();
+//                    KillerPad.sendMessageToPad("notfound", killergame, kpid, ipmsg);
+//
+//                }
+//              }
 
                 if (!(portmsg.equals(killergame.getSERVERPORT()))
                         || !(portmsg.equals(killergame.getIplocal()))) {
@@ -211,7 +232,7 @@ public class VisualHandler implements Runnable {
 
                 }
             }
-        
+        }
 
     }
 

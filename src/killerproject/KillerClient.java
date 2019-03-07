@@ -45,7 +45,16 @@ public class KillerClient implements Runnable {
                     System.err.println("Conexión con "+visual.getIp()+" fallida...");
                 }
             } else if (visual.getSock() != null) {
-                
+                try {
+                 //   System.out.println(System.currentTimeMillis() - visual.time);
+                    System.out.println(System.currentTimeMillis() - visual.time);
+                    if (System.currentTimeMillis() - visual.time >= 5500) {
+                        visual.nullSocket();
+                    } else {
+                        }
+                } catch (Exception e) {
+
+                }
             }
             try {
                 Thread.sleep(200);
