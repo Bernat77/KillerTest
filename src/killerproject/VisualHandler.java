@@ -171,7 +171,7 @@ public class VisualHandler implements Runnable {
                     int axisX = Integer.parseInt(info[9]);
                     int axisY = Integer.parseInt(info[10]);
 
-                    Controlled contr = new Controlled(killergame, color, ip, user);
+                    Controlled contr = new Controlled(killergame, Color.yellow, ip, user);
                     contr.y = killergame.getViewer().getHeight() * Double.valueOf(percnt);
                     contr.speed = Double.valueOf(speed);
                     contr.WIDTH = Integer.parseInt(WIDTH);
