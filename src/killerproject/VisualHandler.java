@@ -82,6 +82,7 @@ public class VisualHandler implements Runnable {
     public void nullSocket() {
 
         try {
+            ok = false;
             sock.close();
             sock = null;
             in = null;

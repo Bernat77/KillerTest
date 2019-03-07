@@ -47,7 +47,7 @@ public class KillerPad implements Runnable {
             out = new PrintWriter(sock.getOutputStream(), true);
             processClient(in, out);
             removeShip("remove", killergame, ip, killergame.getIplocal());
-            killergame.getKpads().remove(this);
+            KillerPad.removePad(killergame, ip, killergame.getIplocal());
             System.out.println(ip + " connection closed");
 
         } catch (IOException ex) {
@@ -195,7 +195,6 @@ public class KillerPad implements Runnable {
         Controlled player = null;
 
         for (int i = 0; i < kg.getObjects().size(); i++) {
-            System.out.println("coño ya tio");
             if (kg.getObjects().get(i).kg.getObjects().get(i) instanceof Controlled) {
                 Controlled temporal = (Controlled) kg.getObjects().get(i);
                 System.out.println("vuelta");
@@ -208,15 +207,38 @@ public class KillerPad implements Runnable {
 
         if (player != null) {
             player.death();
-            System.out.println("remove");
             kg.getObjects().remove(player);
         } else {
             kg.getNk().sendMessage(kg.getNk().notifyVisual(msg, ipShip), "r", msg);
         }
     }
 
+    public static boolean removePad(KillerGame kg, String ipKpad, String ipOrig) {
+        for (int i = 0; i < kg.getKpads().size(); i++) {
+            if (kg.getKpads().get(i).ip.equals(ipKpad)) {
+                KillerPad kp = kg.getKpads().get(i);
+                kp.nullSock();
+                System.out.println("tengo el pad");
+                kg.getKpads().remove(i);
+                System.out.println(ipKpad+" borrado");
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Socket getSock() {
         return sock;
+    }
+
+    public void nullSock() {
+        try {
+            this.sock.close();
+            this.sock = null;
+            this.in = null;
+            this.out = null;
+        } catch (IOException ex) {
+        }
     }
 
     public void setSock(Socket sock) {

@@ -38,7 +38,7 @@ public class KillerRules {
 //                }
             }
 
-        } else {
+        } else  {
             if (obj1 instanceof Controlled && obj2 instanceof Automata
                     && !((Controlled) obj1).isDeath()) {
                 ((Controlled) obj1).kill();
@@ -58,7 +58,9 @@ public class KillerRules {
     public static void collisionShoot(Shoot obj1, Alive obj2) {
 
         if (obj2 instanceof Controlled && !((Controlled) obj2).isDeath()) {
-            if (obj1.getShip().getIp().equals(((Controlled) obj2).getIp())) {
+            System.out.println(obj1.getShip().getIp()
+            +"/"+((Controlled) obj2).getIp());
+            if (!obj1.getShip().getIp().equals(((Controlled) obj2).getIp())) {
                 ((Controlled) obj2).kill();
                 obj1.points(5);
             }

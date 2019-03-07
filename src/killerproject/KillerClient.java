@@ -46,6 +46,8 @@ public class KillerClient implements Runnable {
                 }
             } else if (visual.getSock() != null) {
                 try {
+                 //   System.out.println(System.currentTimeMillis() - visual.time);
+                    System.out.println(System.currentTimeMillis() - visual.time);
                     if (System.currentTimeMillis() - visual.time >= 5500) {
                         visual.nullSocket();
                     } else {

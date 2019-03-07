@@ -38,24 +38,9 @@ public class ConnectionHandler implements Runnable {
 
             if (data[0].equals("fromPnew")) {
 
-                KillerPad kp = null;
-                for (int i = 0; i < this.kg.getKpads().size(); i++) {
-                    if (this.kg.getKpads().get(i).ip.equals(ip)) {
-                        System.out.println("tengo el pad");
-                        kp = this.kg.getKpads().get(i);
-                    }
-                }
-                if (kp != null) {
-                    System.out.println("set");
-                    kp.sock.close();
-                    kp.sock = null;
-
-                } else {
-
-                    String[] info = data[1].split("&");
-
-                    new Thread(new KillerPad(socket, ip, kg, info[0], info[1])).start();
-                }
+               // KillerPad.removePad(kg, ip, kg.getIplocal());
+                String[] info = data[1].split("&");
+                new Thread(new KillerPad(socket, ip, kg, info[0], info[1])).start();
 
             } else if (data[0].equals("fromV")) {
                 String[] info = data[1].split("&");
