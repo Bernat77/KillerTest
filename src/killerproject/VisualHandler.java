@@ -39,6 +39,7 @@ public class VisualHandler implements Runnable {
         this.right = right;
         killergame = kg;
         ok = false;
+        startClient();
     }
 
     @Override
@@ -93,7 +94,7 @@ public class VisualHandler implements Runnable {
     public void request(String line) {
         //  System.out.println(line);
         
-        if (line.equals("vabien?")) {
+        if (line.equals("toctoc")) {
             out.println("ok");
         } else if (line.equals("ok")) {
             time = System.currentTimeMillis();
@@ -170,7 +171,7 @@ public class VisualHandler implements Runnable {
                     int axisX = Integer.parseInt(info[9]);
                     int axisY = Integer.parseInt(info[10]);
 
-                    Controlled contr = new Controlled(killergame, Color.yellow, ip, user);
+                    Controlled contr = new Controlled(killergame, color, ip, user);
                     contr.y = killergame.getViewer().getHeight() * Double.valueOf(percnt);
                     contr.speed = Double.valueOf(speed);
                     contr.WIDTH = Integer.parseInt(WIDTH);

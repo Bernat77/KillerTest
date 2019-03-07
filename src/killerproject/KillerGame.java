@@ -13,6 +13,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,7 +33,7 @@ public class KillerGame extends JFrame {
     //Comunicaciones
     private KillerServer server;
     private String iplocal;
-    private int SERVERPORT;
+    private int SERVERPORT = 8000;
     //
     private VisualHandler nk = new VisualHandler(this, true);
     private VisualHandler pk = new VisualHandler(this, false);
@@ -51,7 +52,9 @@ public class KillerGame extends JFrame {
     int frameH = 700;
 
     public KillerGame() {
-        portFrame();
+        //    portFrame();
+        startServer();
+        ipframe();
     }
 
     public static void main(String[] args) {
@@ -83,7 +86,6 @@ public class KillerGame extends JFrame {
                 if (!text.getText().isEmpty()) {
                     try {
                         SERVERPORT = Integer.parseInt(text.getText());
-                        startServer();
                         ipframe();
                         portframe.dispose();
                     } catch (Exception ex) {
@@ -101,12 +103,6 @@ public class KillerGame extends JFrame {
         portframe.setResizable(false);
         portframe.setLocationRelativeTo(null);
         portframe.setVisible(true);
-
-        try {
-            iplocal = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException ex) {
-            System.out.println("Error de red..");
-        }
     }
 
     public void ipframe() {
@@ -115,9 +111,11 @@ public class KillerGame extends JFrame {
         connection.setLocationRelativeTo(null);
         connection.setResizable(false);
         connection.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
         Container cp = connection.getContentPane();
         connection.getContentPane().setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
         c.insets = new Insets(3, 4, 4, 3);
         c.gridx = 0;
         c.gridy = 0;
@@ -134,8 +132,6 @@ public class KillerGame extends JFrame {
         c.gridx = 4;
         JLabel ip4 = new JLabel("PORT:");
         connection.add(ip4, c);
-        connection.setVisible(true);
-
         ipprev = new JTextField(10);
         portprev = new JTextField(5);
         ipnext = new JTextField(10);
@@ -157,12 +153,16 @@ public class KillerGame extends JFrame {
                 try {
                     if (nk.getIp() == null && nk.getOriginport() == 0) {
                         nk.setIp(ipnext.getText());
-                        nk.setOriginport(Integer.parseInt(portnext.getText()));
+                        if (!portnext.getText().trim().equals("")) {
+                            nk.setOriginport(Integer.parseInt(portnext.getText()));
+                        }
                     }
                     //
                     if (pk.getIp() == null && pk.getOriginport() == 0) {
                         pk.setIp(ipprev.getText());
-                        pk.setOriginport(Integer.parseInt(portprev.getText()));
+                        if (!portprev.getText().trim().equals("")) {
+                            pk.setOriginport(Integer.parseInt(portprev.getText()));
+                        }
                     }
 
                     // frame.dispose();
@@ -181,19 +181,40 @@ public class KillerGame extends JFrame {
         connection.add(ipnext, c);
         c.gridx = 4;
         connection.add(portnext, c);
+        connection.setVisible(true);
 
     }
 
     public void startServer() {
-        server = new KillerServer(this, SERVERPORT);
+
+        try {
+            iplocal = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException ex) {
+            System.err.println("Error de red..");
+        }
+
+        boolean ok = false;
+        while (!ok) {
+
+            try {
+                server = new KillerServer(this, SERVERPORT);
+                if (server.getServerSocket() != null) {
+                    ok = true;
+                    System.out.println("Server iniciado");
+                }
+            } catch (Exception ex) {
+                SERVERPORT++;
+                System.err.println("Socket ocupado, reconectando en el siguiente..");
+            }
+        }
+
         new Thread(server).start();
         new Thread(nk).start();
         new Thread(pk).start();
-        nk.startClient();
-        pk.startClient();
 
         frame();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0;
+                i < 1; i++) {
             objects.add(new Automata(this, Color.red));
         }
 

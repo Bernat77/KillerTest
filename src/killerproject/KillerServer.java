@@ -26,17 +26,11 @@ public class KillerServer implements Runnable {
     private BufferedReader in;
     private PrintWriter out;
 
-    public KillerServer(KillerGame kg, int PORT) {
+    public KillerServer(KillerGame kg, int PORT) throws Exception {
 
         killergame = kg;
         this.PORT = PORT;
-
-        try {
-            serverSocket = new ServerSocket(PORT);
-        } catch (IOException ex) {
-
-        }
-
+        serverSocket = new ServerSocket(PORT);
     }
 
     @Override
@@ -76,7 +70,5 @@ public class KillerServer implements Runnable {
     public void setServerSocket(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
     }
-    
-    
 
 }
