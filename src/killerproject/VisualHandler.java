@@ -81,23 +81,28 @@ public class VisualHandler implements Runnable {
 
     public void nullSocket() {
 
-        try {
-            ok = false;
-            sock.close();
-            sock = null;
-            in = null;
-            out = null;
-        } catch (Exception ex1) {
+        if (this.sock != null) {
 
+            try {
+                this.ok = false;
+                this.sock.close();
+                this.sock = null;
+                this.in = null;
+                this.out = null;
+            } catch (Exception ex1) {
+
+            }
         }
     }
 
     public void request(String line) {
         //  System.out.println(line);
 
+        time = System.currentTimeMillis();
         if (line.equals("ok")) {
-            time = System.currentTimeMillis();
+            System.out.println("recibo ok");
             out.println("ok");
+            System.out.println("envio ok");
         } else {
 
             String[] params = line.split("&");
@@ -237,7 +242,11 @@ public class VisualHandler implements Runnable {
     }
 
     public void alert(String msg) {
-        out.println(msg);
+        try {
+            out.println(msg);
+        } catch (Exception ex) {
+            System.out.println("socket roto jaja!");
+        }
     }
 
     public void sendMessage(String info, String status, String ip) {
@@ -371,6 +380,7 @@ public class VisualHandler implements Runnable {
             time = System.currentTimeMillis();
 
         } catch (IOException ex) {
+            nullSocket();
 
         }
     }

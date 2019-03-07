@@ -39,6 +39,7 @@ public class KillerClient implements Runnable {
                     contact(sock);
                     visual.setSock(sock);
                     visual.alert("ok");
+                        System.out.println("primero");
                     System.out.println("Conexión establecida desde KillerClient.");
                     
                 } catch (IOException ex) {
