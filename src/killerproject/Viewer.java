@@ -36,7 +36,7 @@ public class Viewer extends Canvas implements Runnable {
 
     public Viewer(KillerGame k) {
         killer = k;
-        setSize(new Dimension(killer.getWidth(), killer.getHeight()));
+        setSize(new Dimension(killer.getWidth(), killer.getHeight()-30));
         setBackground(Color.WHITE);
         setFocusable(true);
         requestFocus();
@@ -58,7 +58,6 @@ public class Viewer extends Canvas implements Runnable {
 
     public void images() {
         //creamos una nueva imagen del tamaño del canvas
-        setSize(new Dimension(killer.getWidth(), killer.getHeight()));
         offImg = createImage(getWidth(), getHeight());
         fondo = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR);
     }

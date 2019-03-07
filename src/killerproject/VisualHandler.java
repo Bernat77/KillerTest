@@ -93,11 +93,10 @@ public class VisualHandler implements Runnable {
 
     public void request(String line) {
         //  System.out.println(line);
-        
-        if (line.equals("toctoc")) {
-            out.println("ok");
-        } else if (line.equals("ok")) {
+
+        if (line.equals("ok")) {
             time = System.currentTimeMillis();
+            out.println("ok");
         } else {
 
             String[] params = line.split("&");
@@ -144,11 +143,12 @@ public class VisualHandler implements Runnable {
 
                         String kpid = info[1].trim();
                         String kpmsg = info[2].trim();
+                        System.out.println(kpid + "," + kpmsg);
 
                         if (kpmsg.equals("death")) {
-                            KillerPad.lifeShip(kpmsg, killergame, kpid, ipmsg, true);
+                            KillerPad.lifeShip(kpmsg, killergame, kpid, ipmsg);
                         } else if (kpmsg.equals("replay")) {
-                            KillerPad.lifeShip(kpmsg, killergame, kpid, ipmsg, true);
+                            KillerPad.lifeShip(kpmsg, killergame, kpid, ipmsg);
                         } else if (kpmsg.equals("remove")) {
                             KillerPad.removeShip(kpmsg, killergame, kpid, ipmsg);
                         }

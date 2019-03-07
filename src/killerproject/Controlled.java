@@ -111,13 +111,14 @@ public class Controlled extends Alive {
     }
 
     public void kill() {
-        System.out.println(ip);
-        KillerPad.lifeShip("death", kg, ip, kg.getIplocal(), true);
+        System.out.println(ip + " ha muerto.");
+        KillerPad.lifeShip("death", kg, ip, kg.getIplocal());
         KillerPad.sendMessageToPad("ded", kg, ip, kg.getIplocal());
     }
 
     public void restart() {
-        KillerPad.lifeShip("replay", kg, ip, kg.getIplocal(), false);
+        System.out.println(ip + "ha revivido.");
+        KillerPad.lifeShip("replay", kg, ip, kg.getIplocal());
     }
 
     public Rectangle nextMove() {
@@ -168,6 +169,7 @@ public class Controlled extends Alive {
 
         switch (dir) {
             case "up":
+                System.out.println("upppp");
                 up = true;
                 down = false;
                 right = false;

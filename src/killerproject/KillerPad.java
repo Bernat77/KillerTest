@@ -29,6 +29,7 @@ public class KillerPad implements Runnable {
     PrintWriter out;
 
     public KillerPad(Socket sock, String ip, KillerGame killergame, String user, String color) {
+        killergame.getKpads().add(this);
         this.sock = sock;
         this.ip = ip;
         this.killergame = killergame;
@@ -45,7 +46,7 @@ public class KillerPad implements Runnable {
             in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
             out = new PrintWriter(sock.getOutputStream(), true);
             processClient(in, out);
-            removeShip("death", killergame, ip, killergame.getIplocal());
+            removeShip("remove", killergame, ip, killergame.getIplocal());
             killergame.getKpads().remove(this);
             System.out.println(ip + " connection closed");
 
@@ -130,6 +131,7 @@ public class KillerPad implements Runnable {
                 || msg.equals("idle")) {
             if (player != null) {
                 if (!player.isDeath()) {
+                    System.out.println("entra");
                     player.setDirections(msg);
                 }
             } else {
@@ -140,6 +142,10 @@ public class KillerPad implements Runnable {
 
     public static void sendMessageToPad(String msg, KillerGame kg, String ipPad, String ipOrig) {
 
+        try {
+            Thread.sleep(20);
+        } catch (InterruptedException ex) {
+        }
         KillerPad pad = null;
 
         for (int i = 0; i < kg.getKpads().size(); i++) {
@@ -159,7 +165,7 @@ public class KillerPad implements Runnable {
 
     }
 
-    public static void lifeShip(String msg, KillerGame kg, String ipShip, String ipOrig, boolean life) {
+    public static void lifeShip(String msg, KillerGame kg, String ipShip, String ipOrig) {
 
         Controlled player = null;
 
@@ -173,10 +179,14 @@ public class KillerPad implements Runnable {
         }
 
         if (player != null) {
-            player.setDeath(life);
-            player.stop();
+            if (msg.equals("death")) {
+                player.setDeath(true);
+                player.stop();
+            } else if (msg.equals("restart")) {
+                player.setDeath(false);
+            }
         } else {
-            kg.getNk().notifyVisual(msg, ipShip);
+            kg.getNk().sendMessage(kg.getNk().notifyVisual(msg, ipShip), "r", msg);
         }
     }
 
@@ -185,9 +195,12 @@ public class KillerPad implements Runnable {
         Controlled player = null;
 
         for (int i = 0; i < kg.getObjects().size(); i++) {
+            System.out.println("coño ya tio");
             if (kg.getObjects().get(i).kg.getObjects().get(i) instanceof Controlled) {
                 Controlled temporal = (Controlled) kg.getObjects().get(i);
+                System.out.println("vuelta");
                 if (temporal.getIp().equals(ipShip)) {
+                    System.out.println("lo tengo");
                     player = temporal;
                 }
             }
@@ -195,10 +208,10 @@ public class KillerPad implements Runnable {
 
         if (player != null) {
             player.death();
+            System.out.println("remove");
             kg.getObjects().remove(player);
         } else {
-            kg.getNk().notifyVisual(msg, ipShip);
-
+            kg.getNk().sendMessage(kg.getNk().notifyVisual(msg, ipShip), "r", msg);
         }
     }
 

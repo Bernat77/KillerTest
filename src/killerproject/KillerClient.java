@@ -38,6 +38,7 @@ public class KillerClient implements Runnable {
                     Socket sock = new Socket(visual.getIp(), visual.getOriginport());
                     contact(sock);
                     visual.setSock(sock);
+                    visual.alert("ok");
                     System.out.println("Conexión establecida desde KillerClient.");
                     
                 } catch (IOException ex) {
@@ -45,12 +46,10 @@ public class KillerClient implements Runnable {
                 }
             } else if (visual.getSock() != null) {
                 try {
-                    visual.alert("toctoc");
                     if (System.currentTimeMillis() - visual.time >= 5500) {
                         visual.nullSocket();
                     } else {
-                        visual.alert("ok");
-                    }
+                        }
                 } catch (Exception e) {
 
                 }

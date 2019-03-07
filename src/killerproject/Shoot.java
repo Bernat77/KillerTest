@@ -67,6 +67,10 @@ public class Shoot extends Automata implements Runnable {
     public void updateHitBox() {
         hitbox.setBounds((int) x, (int) y, radius, radius);
     }
+    
+    public void points(int points){
+        KillerPad.sendMessageToPad("pnt"+points, kg, ship.getIp(), kg.getIplocal());
+    }
 
     public Controlled getControlled() {
         return ship;
