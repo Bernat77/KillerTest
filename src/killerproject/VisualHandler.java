@@ -48,72 +48,62 @@ public class VisualHandler implements Runnable {
             try {
                 if (sock != null && ok) {
 
-                    processMessage(in, out);
+                    String line = in.readLine();
 
+                    if (line.equals("ok")) {
+                        time = System.currentTimeMillis();
+                        out.println("ok");
+                    } else {
+                        processMessage(line);
+                    }
                 }
                 Thread.sleep(200);
             } catch (InterruptedException ex) {
 
+            } catch (IOException ex) {
+                nullSocket();
+            }catch(NullPointerException ex){
+                nullSocket();
             }
         }
     }
 
-    public void processMessage(BufferedReader in, PrintWriter out) {
+    public void processMessage(String line) {
         boolean done = false;
-        String line;
-
         while (!done) {
-            try {
 
-                line = in.readLine();
-                if (line != null) {
-                    //  System.out.println(line);
-                    request(line);
-                }
-
-            } catch (IOException ex) {
-                done = true;
-                nullSocket();
+            if (line != null) {
+                //  System.out.println(line);
+                request(line);
             }
-
         }
     }
 
     public void nullSocket() {
 
-        if (this.sock != null) {
+        try {
+            ok = false;
+            sock.close();
+            sock = null;
+            in = null;
+            out = null;
+        } catch (Exception ex1) {
 
-            try {
-                this.ok = false;
-                this.sock.close();
-                this.sock = null;
-                this.in = null;
-                this.out = null;
-            } catch (Exception ex1) {
-
-            }
         }
     }
 
     public void request(String line) {
         //  System.out.println(line);
 
-        time = System.currentTimeMillis();
-        if (line.equals("ok")) {
-            System.out.println("recibo ok");
-            out.println("ok");
-            System.out.println("envio ok");
-        } else {
+        String[] params = line.split("&");
 
-            String[] params = line.split("&");
+        String status = params[0];
+        String ipmsg = params[1];
+        String portmsg = params[2];
+        String[] info = params[3].split("/");
 
-            String status = params[0];
-            String ipmsg = params[1];
-            String portmsg = params[2];
-            String[] info = params[3].split("/");
-
-            if (status.equals("r")) {
-                System.out.println("R!!");
+        if (status.equals("r")) {
+            System.out.println("R!!");
 //
 //            if ((portmsg.equals(killergame.getSERVERPORT()))) {
 //                //if ((ipmsg.equals(killergame.getIplocal()))) {
@@ -130,123 +120,117 @@ public class VisualHandler implements Runnable {
 //                }
 //              }
 
-                if (!(portmsg.equals(killergame.getSERVERPORT()))
-                        || !(portmsg.equals(killergame.getIplocal()))) {
-                    if (info[0].trim().equals("kpad")) {
+            if (!(portmsg.equals(killergame.getSERVERPORT()))
+                    || !(portmsg.equals(killergame.getIplocal()))) {
+                if (info[0].trim().equals("kpad")) {
 
-                        String kpid = info[1].trim();
-                        String kpmsg = info[2].trim();
-                        KillerPad.request(kpmsg, killergame, kpid, ipmsg);
+                    String kpid = info[1].trim();
+                    String kpmsg = info[2].trim();
+                    KillerPad.request(kpmsg, killergame, kpid, ipmsg);
 
-                    } else if (info[0].trim().equals("topad")) {
+                } else if (info[0].trim().equals("topad")) {
 
-                        String kpid = info[1].trim();
-                        String kpmsg = info[2].trim();
+                    String kpid = info[1].trim();
+                    String kpmsg = info[2].trim();
 
-                        KillerPad.sendMessageToPad(kpmsg, killergame, kpid, ipmsg);
+                    KillerPad.sendMessageToPad(kpmsg, killergame, kpid, ipmsg);
 
-                    } else if (info[0].trim().equals("tovisual")) {
+                } else if (info[0].trim().equals("tovisual")) {
 
-                        String kpid = info[1].trim();
-                        String kpmsg = info[2].trim();
-                        System.out.println(kpid + "," + kpmsg);
+                    String kpid = info[1].trim();
+                    String kpmsg = info[2].trim();
+                    System.out.println(kpid + "," + kpmsg);
 
-                        if (kpmsg.equals("death")) {
-                            KillerPad.lifeShip(kpmsg, killergame, kpid, ipmsg);
-                        } else if (kpmsg.equals("replay")) {
-                            KillerPad.lifeShip(kpmsg, killergame, kpid, ipmsg);
-                        } else if (kpmsg.equals("remove")) {
-                            KillerPad.removeShip(kpmsg, killergame, kpid, ipmsg);
-                        }
+                    if (kpmsg.equals("death")) {
+                        KillerPad.lifeShip(kpmsg, killergame, kpid, ipmsg);
+                    } else if (kpmsg.equals("replay")) {
+                        KillerPad.lifeShip(kpmsg, killergame, kpid, ipmsg);
+                    } else if (kpmsg.equals("remove")) {
+                        KillerPad.removeShip(kpmsg, killergame, kpid, ipmsg);
                     }
-
                 }
 
-            } else if (status.equals("d")) {
+            }
 
-                if (info[0].trim().equals("player")) {
+        } else if (status.equals("d")) {
 
-                    String ip = info[1];
-                    String user = info[2];
-                    String color = info[3];
-                    String percnt = info[4];
-                    String speed = info[5];
-                    String WIDTH = info[6];
-                    String HEIGHT = info[7];
-                    String dir = info[8];
-                    int axisX = Integer.parseInt(info[9]);
-                    int axisY = Integer.parseInt(info[10]);
+            if (info[0].trim().equals("player")) {
 
-                    Controlled contr = new Controlled(killergame, Color.yellow, ip, user);
-                    contr.y = killergame.getViewer().getHeight() * Double.valueOf(percnt);
-                    contr.speed = Double.valueOf(speed);
-                    contr.WIDTH = Integer.parseInt(WIDTH);
-                    contr.HEIGHT = Integer.parseInt(HEIGHT);
+                String ip = info[1];
+                String user = info[2];
+                String color = info[3];
+                String percnt = info[4];
+                String speed = info[5];
+                String WIDTH = info[6];
+                String HEIGHT = info[7];
+                String dir = info[8];
+                int axisX = Integer.parseInt(info[9]);
+                int axisY = Integer.parseInt(info[10]);
 
-                    if (dir.equals("right")) {
-                        contr.x = killergame.getViewer().getWidth() - contr.WIDTH / 2;
-                        contr.right = false;
-                    } else if (dir.equals("left")) {
-                        contr.x = -contr.WIDTH / 2;
-                        contr.right = true;
-                    }
+                Controlled contr = new Controlled(killergame, Color.yellow, ip, user);
+                contr.y = killergame.getViewer().getHeight() * Double.valueOf(percnt);
+                contr.speed = Double.valueOf(speed);
+                contr.WIDTH = Integer.parseInt(WIDTH);
+                contr.HEIGHT = Integer.parseInt(HEIGHT);
 
-                    if (axisX == 1) {
-                        contr.right = true;
-                    } else if (axisX == -1) {
-                        contr.left = true;
-                    }
-
-                    if (axisY == 1) {
-                        contr.up = true;
-
-                    } else if (axisY == -1) {
-                        contr.down = true;
-                    }
-                    System.out.println(percnt);
-                    System.out.println(contr.y);
-                    killergame.createControlled(contr);
-
-                } else if (info[0].trim().equals("automata")) {
-
-                    String color = info[1];
-                    String percnt = info[2];
-                    String speed = info[3];
-                    String WIDTH = info[4];
-                    String HEIGHT = info[5];
-                    String dirx = info[6];
-                    String diry = info[7];
-
-                    Automata auto = new Automata(killergame, Color.yellow);
-                    auto.y = killergame.getViewer().getHeight() * Double.valueOf(percnt);
-                    auto.speed = Double.valueOf(speed);
-                    auto.WIDTH = Integer.parseInt(WIDTH);
-                    auto.HEIGHT = Integer.parseInt(HEIGHT);
-
-                    if (dirx.equals("right")) {
-                        auto.x = killergame.getViewer().getWidth() - auto.WIDTH / 2;
-                        auto.dx = -Double.valueOf(speed);
-                    } else if (dirx.equals("left")) {
-                        auto.x = -auto.WIDTH / 2;
-                        auto.dx = Double.valueOf(speed);
-                    }
-                    auto.dy = Integer.parseInt(diry) * Double.valueOf(speed);
-                    killergame.createAutomata(auto);
-
-                } else if (info[0].trim().equals("shoot")) {
-
+                if (dir.equals("right")) {
+                    contr.x = killergame.getViewer().getWidth() - contr.WIDTH / 2;
+                    contr.right = false;
+                } else if (dir.equals("left")) {
+                    contr.x = -contr.WIDTH / 2;
+                    contr.right = true;
                 }
+
+                if (axisX == 1) {
+                    contr.right = true;
+                } else if (axisX == -1) {
+                    contr.left = true;
+                }
+
+                if (axisY == 1) {
+                    contr.up = true;
+
+                } else if (axisY == -1) {
+                    contr.down = true;
+                }
+                System.out.println(percnt);
+                System.out.println(contr.y);
+                killergame.createControlled(contr);
+
+            } else if (info[0].trim().equals("automata")) {
+
+                String color = info[1];
+                String percnt = info[2];
+                String speed = info[3];
+                String WIDTH = info[4];
+                String HEIGHT = info[5];
+                String dirx = info[6];
+                String diry = info[7];
+
+                Automata auto = new Automata(killergame, Color.yellow);
+                auto.y = killergame.getViewer().getHeight() * Double.valueOf(percnt);
+                auto.speed = Double.valueOf(speed);
+                auto.WIDTH = Integer.parseInt(WIDTH);
+                auto.HEIGHT = Integer.parseInt(HEIGHT);
+
+                if (dirx.equals("right")) {
+                    auto.x = killergame.getViewer().getWidth() - auto.WIDTH / 2;
+                    auto.dx = -Double.valueOf(speed);
+                } else if (dirx.equals("left")) {
+                    auto.x = -auto.WIDTH / 2;
+                    auto.dx = Double.valueOf(speed);
+                }
+                auto.dy = Integer.parseInt(diry) * Double.valueOf(speed);
+                killergame.createAutomata(auto);
+
+            } else if (info[0].trim().equals("shoot")) {
+
             }
         }
-
     }
 
     public void alert(String msg) {
-        try {
-            out.println(msg);
-        } catch (Exception ex) {
-            System.out.println("socket roto jaja!");
-        }
+        out.println(msg);
     }
 
     public void sendMessage(String info, String status, String ip) {
@@ -380,7 +364,6 @@ public class VisualHandler implements Runnable {
             time = System.currentTimeMillis();
 
         } catch (IOException ex) {
-            nullSocket();
 
         }
     }
