@@ -100,6 +100,7 @@ public class VisualHandler implements Runnable {
         if (line.equals("ok")) {
             out.println("ok");
 //            time = System.currentTimeMillis();
+             
         } else {
 
             String[] params = line.split("&");
