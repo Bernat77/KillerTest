@@ -30,14 +30,12 @@ public class VisualHandler implements Runnable {
     private KillerClient kc;
 
     private boolean right;
-    private boolean ok;
 
     //  long time;
     public VisualHandler(KillerGame kg, boolean right) {
         kc = new KillerClient(this);
         this.right = right;
         killergame = kg;
-        ok = false;
         startClient();
     }
 
@@ -45,7 +43,7 @@ public class VisualHandler implements Runnable {
     public void run() {
         while (true) {
             try {
-                if (sock != null && ok) {
+                if (sock != null) {
 
                     processMessage(in, out);
 
@@ -67,6 +65,8 @@ public class VisualHandler implements Runnable {
                 line = in.readLine();
                 if (line != null) {
                     request(line);
+                } else {
+                    done = true;
                 }
 
             } catch (IOException ex) {
@@ -75,22 +75,20 @@ public class VisualHandler implements Runnable {
                 System.out.println(ex.getMessage());
                 System.out.println("Time out");
                 done = true;
-                nullSocket();
             }
 
         }
+        nullSocket();
     }
 
     public void nullSocket() {
 
         try {
-            ok = false;
             sock.close();
             sock = null;
-            in = null;
-            out = null;
         } catch (Exception ex1) {
-
+            System.out.println(ex1.getCause() + ex1.getMessage());
+            System.out.println("hola");
         }
     }
 
@@ -100,7 +98,7 @@ public class VisualHandler implements Runnable {
         if (line.equals("ok")) {
             out.println("ok");
 //            time = System.currentTimeMillis();
-             
+
         } else {
 
             String[] params = line.split("&");
@@ -240,7 +238,12 @@ public class VisualHandler implements Runnable {
     }
 
     public void alert(String msg) {
-        out.println(msg);
+        try {
+            out.println(msg);
+        } catch (Exception ex) {
+            System.out.println("null de verdad");
+            nullSocket();
+        }
     }
 
     public void sendMessage(String info, String status, String ip) {
@@ -360,7 +363,6 @@ public class VisualHandler implements Runnable {
         try {
             in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
             out = new PrintWriter(sock.getOutputStream(), true);
-            ok = true;
 
             if (right) {
                 killergame.getIpnext().setEnabled(false);
@@ -372,6 +374,8 @@ public class VisualHandler implements Runnable {
                 killergame.getIpprev().setText("Connected!");
             }
 //            time = System.currentTimeMillis();
+            alert("ok");
+            this.sock.setSoTimeout(3500);
 
         } catch (Exception ex) {
 
