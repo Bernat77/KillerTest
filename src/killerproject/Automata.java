@@ -28,7 +28,7 @@ public class Automata extends Alive {
         HEIGHT = 30;
         WIDTH = 30;
 
-        speed = 2.2;
+        speed = 5.2;
         dx = speed;
         dy = speed;
         x = (int) (kg.getViewer().getWidth() / 2 * Math.random());
