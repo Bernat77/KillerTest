@@ -35,7 +35,8 @@ public class KillerClient implements Runnable {
             if (visual.getSock() == null && visual.getIp() != null && visual.getOriginport() != 0) {
                 try {
                     System.out.println("Conectando con " + visual.getIp()+"/"+visual.getOriginport());
-                    Socket sock = new Socket(visual.getIp(), visual.getOriginport());
+                    Socket sock = new Socket();
+                    sock.connect(new InetSocketAddress(visual.getIp(), visual.getOriginport()), 1000);
                     contact(sock);
                     visual.setSock(sock);
                     visual.alert("ok");
@@ -44,17 +45,18 @@ public class KillerClient implements Runnable {
                 } catch (IOException ex) {
                     System.err.println("Conexión con "+visual.getIp()+" fallida...");
                 }
-            } else if (visual.getSock() != null) {
-                try {
-                 //   System.out.println(System.currentTimeMillis() - visual.time);
-                    System.out.println(System.currentTimeMillis() - visual.time);
-                    if (System.currentTimeMillis() - visual.time >= 5500) {
-                        visual.nullSocket();
-                    } else {
-                        }
-                } catch (Exception e) {
-
-                }
+//            } else if (visual.getSock() != null) {
+//                try {
+//                 //   System.out.println(System.currentTimeMillis() - visual.time);
+//                    System.out.println(System.currentTimeMillis() - visual.time);
+//                    if (System.currentTimeMillis() - visual.time >= 5500) {
+//                        visual.nullSocket();
+//                    } else {
+//                        visual.alert("ok");
+//                        }
+//                } catch (Exception e) {
+//
+//                }
             }
             try {
                 Thread.sleep(200);

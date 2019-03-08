@@ -67,11 +67,11 @@ public class VisualHandler implements Runnable {
 
                 line = in.readLine();
                 if (line != null) {
-                    //  System.out.println(line);
                     request(line);
                 }
 
             } catch (IOException ex) {
+                System.out.println("Time out");
                 done = true;
                 nullSocket();
             }
@@ -97,7 +97,7 @@ public class VisualHandler implements Runnable {
 
         if (line.equals("ok")) {
             out.println("ok");
-             time = System.currentTimeMillis();
+            time = System.currentTimeMillis();
         } else {
 
             String[] params = line.split("&");
