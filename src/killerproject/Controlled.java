@@ -33,8 +33,8 @@ public class Controlled extends Alive {
         HEIGHT = 30;
         WIDTH = 30;
         this.user = user;
-
         this.color = color;
+        colorhex = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
 
         //tamaño hitbox
         hitbox = new Rectangle((int) x, (int) y, WIDTH, HEIGHT);

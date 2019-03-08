@@ -172,7 +172,7 @@ public class VisualHandler implements Runnable {
                     int axisX = Integer.parseInt(info[9]);
                     int axisY = Integer.parseInt(info[10]);
 
-                    Controlled contr = new Controlled(killergame, Color.yellow, ip, user);
+                    Controlled contr = new Controlled(killergame, Color.decode(color), ip, user);
                     contr.y = killergame.getViewer().getHeight() * Double.valueOf(percnt);
                     contr.speed = Double.valueOf(speed);
                     contr.WIDTH = Integer.parseInt(WIDTH);
@@ -212,7 +212,7 @@ public class VisualHandler implements Runnable {
                     String dirx = info[6];
                     String diry = info[7];
 
-                    Automata auto = new Automata(killergame, Color.yellow);
+                    Automata auto = new Automata(killergame, Color.decode(color));
                     auto.y = killergame.getViewer().getHeight() * Double.valueOf(percnt);
                     auto.speed = Double.valueOf(speed);
                     auto.WIDTH = Integer.parseInt(WIDTH);
@@ -280,7 +280,7 @@ public class VisualHandler implements Runnable {
             axisY = -1;
         }
 
-        String msg = "player/" + obj.ip + "/" + obj.user + "/" + obj.color
+        String msg = "player/" + obj.ip + "/" + obj.user + "/" + obj.colorhex
                 + "/" + percentSc + "/" + obj.speed + "/"
                 + obj.WIDTH + "/" + obj.HEIGHT + "/" + dir + "/"
                 + axisX + "/" + axisY;
@@ -303,7 +303,7 @@ public class VisualHandler implements Runnable {
             diry = -1;
         }
 
-        String msg = "automata/" + obj.color
+        String msg = "automata/" + obj.colorhex
                 + "/" + percentSc + "/" + obj.speed + "/"
                 + obj.WIDTH + "/" + obj.HEIGHT + "/" + dirx + "/" + diry;
         return msg;

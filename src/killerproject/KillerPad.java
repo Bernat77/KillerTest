@@ -34,7 +34,7 @@ public class KillerPad implements Runnable {
         this.ip = ip;
         this.killergame = killergame;
         port = sock.getPort();
-        Controlled player = new Controlled(killergame, Color.yellow, ip, user);
+        Controlled player = new Controlled(killergame, Color.decode("#"+color), ip, user);
         killergame.getObjects().add(player);
         killergame.getKpads().add(this);
         new Thread(player).start();
@@ -237,7 +237,7 @@ public class KillerPad implements Runnable {
             this.sock = null;
             this.in = null;
             this.out = null;
-        } catch (IOException ex) {
+        } catch (NullPointerException | IOException ex) {
         }
     }
 

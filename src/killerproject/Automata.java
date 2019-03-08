@@ -37,6 +37,7 @@ public class Automata extends Alive {
         hitbox = new Rectangle((int) x, (int) y, WIDTH, HEIGHT);
 
         this.color = color;
+        colorhex = String.format("#%02x%02x%02x", color.getRed(),color.getGreen(),color.getBlue());
 
         time = System.nanoTime();
 

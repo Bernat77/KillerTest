@@ -20,6 +20,7 @@ public abstract class Alive extends VisibleObject implements Runnable {
 
     Rectangle hitbox;
     Color color;
+    String colorhex;
 
     boolean alive;
     
