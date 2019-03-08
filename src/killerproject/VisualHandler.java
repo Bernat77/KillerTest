@@ -32,8 +32,7 @@ public class VisualHandler implements Runnable {
     private boolean right;
     private boolean ok;
 
-    long time;
-
+    //  long time;
     public VisualHandler(KillerGame kg, boolean right) {
         kc = new KillerClient(this);
         this.right = right;
@@ -100,7 +99,7 @@ public class VisualHandler implements Runnable {
 
         if (line.equals("ok")) {
             out.println("ok");
-            time = System.currentTimeMillis();
+//            time = System.currentTimeMillis();
         } else {
 
             String[] params = line.split("&");
@@ -371,7 +370,7 @@ public class VisualHandler implements Runnable {
                 killergame.getPortprev().setEnabled(false);
                 killergame.getIpprev().setText("Connected!");
             }
-            time = System.currentTimeMillis();
+//            time = System.currentTimeMillis();
 
         } catch (Exception ex) {
 
