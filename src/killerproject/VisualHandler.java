@@ -71,6 +71,9 @@ public class VisualHandler implements Runnable {
                 }
 
             } catch (IOException ex) {
+                System.out.println(ex.getClass());
+                System.out.println(ex.getCause());
+                System.out.println(ex.getMessage());
                 System.out.println("Time out");
                 done = true;
                 nullSocket();
@@ -370,7 +373,7 @@ public class VisualHandler implements Runnable {
             }
             time = System.currentTimeMillis();
 
-        } catch (IOException ex) {
+        } catch (Exception ex) {
 
         }
     }

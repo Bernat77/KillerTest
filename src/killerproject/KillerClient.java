@@ -35,8 +35,8 @@ public class KillerClient implements Runnable {
             if (visual.getSock() == null && visual.getIp() != null && visual.getOriginport() != 0) {
                 try {
                     System.out.println("Conectando con " + visual.getIp()+"/"+visual.getOriginport());
-                    Socket sock = new Socket();
-                    sock.connect(new InetSocketAddress(visual.getIp(), visual.getOriginport()), 1000);
+                    Socket sock = new Socket(visual.getIp(),visual.getOriginport());
+                    sock.setSoTimeout(20);
                     contact(sock);
                     visual.setSock(sock);
                     visual.alert("ok");
