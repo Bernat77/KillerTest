@@ -22,9 +22,6 @@ public class Viewer extends Canvas implements Runnable {
 
     private KillerGame killer;
 
-    static final int WIDTH = 1830;
-    static final int HEIGHT = 1030;
-
     private int fps = 30;
     private double averageFPS;
     private double target = 1000 / fps;
@@ -36,7 +33,7 @@ public class Viewer extends Canvas implements Runnable {
 
     public Viewer(KillerGame k) {
         killer = k;
-        setSize(new Dimension(killer.getWidth(), killer.getHeight()-30));
+        setSize(new Dimension(killer.getWidth(), killer.getHeight()));
         setBackground(Color.WHITE);
         setFocusable(true);
         requestFocus();
@@ -54,26 +51,6 @@ public class Viewer extends Canvas implements Runnable {
             }
         }
 
-    }
-
-    public void images() {
-        //creamos una nueva imagen del tamaño del canvas
-        offImg = createImage(getWidth(), getHeight());
-        fondo = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-    }
-
-    public void update() {
-
-        //cogemos los graficos de la imagen
-        Graphics g2d = offImg.getGraphics();
-        //asi pintamos el fondo
-        g2d.drawImage(fondo, 0, 0, null);
-
-        //pintamos todos los componentes en los graphics de la imagen
-        this.drawComponents(g2d);
-
-        //pintamos la imagen en el canvas
-        this.getGraphics().drawImage(offImg, 0, 0, null);
     }
 
     public void drawComponents(Graphics g) {
@@ -128,6 +105,26 @@ public class Viewer extends Canvas implements Runnable {
                     (int) height + 32);
         }
 
+    }
+
+    public void images() {
+        //creamos una nueva imagen del tamaño del canvas
+        offImg = createImage(getWidth(), getHeight());
+        fondo = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+    }
+
+    public void update() {
+
+        //cogemos los graficos de la imagen
+        Graphics g2d = offImg.getGraphics();
+        //asi pintamos el fondo
+        g2d.drawImage(fondo, 0, 0, null);
+
+        //pintamos todos los componentes en los graphics de la imagen
+        this.drawComponents(g2d);
+
+        //pintamos la imagen en el canvas
+        this.getGraphics().drawImage(offImg, 0, 0, null);
     }
 
 }

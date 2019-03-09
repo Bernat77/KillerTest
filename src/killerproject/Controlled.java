@@ -22,7 +22,6 @@ public class Controlled extends Alive {
     boolean fright;
     boolean wup, wdown, wright, wleft;
     private ArrayList<Shoot> shoots = new ArrayList();
-
     private boolean death;
 
     public Controlled(KillerGame kg, Color color, String ip, String user) {
@@ -76,61 +75,6 @@ public class Controlled extends Alive {
 
     }
 
-    @Override
-    public void move() {
-        double timedif = (System.nanoTime() - time) / 10000000d;
-
-        kg.checkColision(this);
-        checkMove();
-        x += dx * timedif;
-        y += dy * timedif;
-
-        dx = 0;
-        dy = 0;
-
-        updateHitBox();
-
-        time = System.nanoTime();
-
-    }
-
-    public void stop() {
-        up = false;
-        down = false;
-        right = false;
-        left = false;
-    }
-
-    @Override
-    public void collision() {
-
-    }
-
-    public void death() {
-        alive = false;
-    }
-
-    public void kill() {
-        System.out.println(ip + " ha muerto.");
-        KillerPad.lifeShip("death", kg, ip, kg.getIplocal());
-        KillerPad.sendMessageToPad("ded", kg, ip, kg.getIplocal());
-    }
-
-    public void restart() {
-        System.out.println(ip + "ha revivido.");
-        KillerPad.lifeShip("replay", kg, ip, kg.getIplocal());
-    }
-
-    public Rectangle nextMove() {
-        return new Rectangle((int) (x + dx), (int) (y + dy), WIDTH, HEIGHT);
-    }
-
-    public void shoot() {
-        Shoot fire = new Shoot(kg, color, this);
-        shoots.add(fire);
-        new Thread(fire).start();
-    }
-
     public void checkMove() {
         if (up && !wup) {
             dy = -speed;
@@ -161,6 +105,72 @@ public class Controlled extends Alive {
                 wright = false;
             }
         }
+    }
+
+    @Override
+    public void collision() {
+
+    }
+
+    public void death() {
+        alive = false;
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        if (!death) {
+            g.setColor(Color.WHITE);
+            g.drawString(user, (int) x, (int) y - (HEIGHT / 2));
+            g.setColor(color);
+            g.fillOval((int) x, (int) y, HEIGHT, WIDTH);
+            drawShoots(g);
+        }
+        // g.drawImage(,x, y,null);
+    }
+
+    public void drawShoots(Graphics g) {
+        if (!shoots.isEmpty()) {
+            for (int i = 0; i < shoots.size(); i++) {
+                Shoot current = shoots.get(i);
+                g.setColor(current.getColor());
+                g.fillOval((int) current.getX(), (int) current.getY(),
+                        current.getRadius(), current.getRadius());
+            }
+
+        }
+    }
+
+    public void kill() {
+        System.out.println(ip + " ha muerto.");
+        KillerPad.lifeShip("death", kg, ip, kg.getIplocal());
+        KillerPad.sendMessageToPad("ded", kg, ip, kg.getIplocal());
+    }
+
+    @Override
+    public void move() {
+        double timedif = (System.nanoTime() - time) / 10000000d;
+
+        kg.checkColision(this);
+        checkMove();
+        x += dx * timedif;
+        y += dy * timedif;
+
+        dx = 0;
+        dy = 0;
+
+        updateHitBox();
+
+        time = System.nanoTime();
+
+    }
+
+    public Rectangle nextMove() {
+        return new Rectangle((int) (x + dx), (int) (y + dy), WIDTH, HEIGHT);
+    }
+
+    public void restart() {
+        System.out.println(ip + "ha revivido.");
+        KillerPad.lifeShip("replay", kg, ip, kg.getIplocal());
     }
 
     public void setDirections(String direction) {
@@ -227,32 +237,21 @@ public class Controlled extends Alive {
 
     }
 
+    public void shoot() {
+        Shoot fire = new Shoot(kg, color, this);
+        shoots.add(fire);
+        new Thread(fire).start();
+    }
+
+    public void stop() {
+        up = false;
+        down = false;
+        right = false;
+        left = false;
+    }
+
     public void updateHitBox() {
         hitbox.setBounds((int) x, (int) y, WIDTH, HEIGHT);
-    }
-
-    @Override
-    public void draw(Graphics g) {
-        if (!death) {
-            g.setColor(Color.WHITE);
-            g.drawString(user, (int) x, (int) y - (HEIGHT / 2));
-            g.setColor(color);
-            g.fillOval((int) x, (int) y, HEIGHT, WIDTH);
-            drawShoots(g);
-        }
-        // g.drawImage(,x, y,null);
-    }
-
-    public void drawShoots(Graphics g) {
-        if (!shoots.isEmpty()) {
-            for (int i = 0; i < shoots.size(); i++) {
-                Shoot current = shoots.get(i);
-                g.setColor(current.getColor());
-                g.fillOval((int) current.getX(), (int) current.getY(),
-                        current.getRadius(), current.getRadius());
-            }
-
-        }
     }
 
     public String getIp() {

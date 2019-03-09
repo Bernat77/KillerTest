@@ -49,6 +49,11 @@ public class Shoot extends Automata implements Runnable {
 
     }
 
+    public void death() {
+        ship.getShoots().remove(this);
+        alive = false;
+    }
+
     public void move() {
         kg.checkColision(this);
         if (this.frightdir) {
@@ -59,17 +64,12 @@ public class Shoot extends Automata implements Runnable {
         updateHitBox();
     }
 
-    public void death() {
-        ship.getShoots().remove(this);
-        alive = false;
+    public void points(int points) {
+        KillerPad.sendMessageToPad("pnt" + points, kg, ship.getIp(), kg.getIplocal());
     }
 
     public void updateHitBox() {
         hitbox.setBounds((int) x, (int) y, radius, radius);
-    }
-    
-    public void points(int points){
-        KillerPad.sendMessageToPad("pnt"+points, kg, ship.getIp(), kg.getIplocal());
     }
 
     public Controlled getControlled() {
@@ -139,6 +139,5 @@ public class Shoot extends Automata implements Runnable {
     public void setAlive(boolean alive) {
         this.alive = alive;
     }
-    
 
 }

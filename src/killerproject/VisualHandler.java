@@ -55,6 +55,36 @@ public class VisualHandler implements Runnable {
         }
     }
 
+    public void alert(String msg) {
+        try {
+            out.println(msg);
+        } catch (Exception ex) {
+            System.out.println("null de verdad");
+            nullSocket();
+        }
+    }
+
+    public void nullSocket() {
+
+        try {
+            sock.close();
+            sock = null;
+        } catch (Exception ex1) {
+            System.out.println(ex1.getCause() + ex1.getMessage());
+            System.out.println("hola");
+        }
+    }
+
+    public String notifyPad(String msg, String idkp) {
+
+        return ("topad/" + idkp + "/" + msg);
+
+    }
+
+    public String notifyVisual(String msg, String idkp) {
+        return ("tovisual/" + idkp + "/" + msg);
+    }
+
     public void processMessage(BufferedReader in, PrintWriter out) {
         boolean done = false;
         String line;
@@ -79,17 +109,6 @@ public class VisualHandler implements Runnable {
 
         }
         nullSocket();
-    }
-
-    public void nullSocket() {
-
-        try {
-            sock.close();
-            sock = null;
-        } catch (Exception ex1) {
-            System.out.println(ex1.getCause() + ex1.getMessage());
-            System.out.println("hola");
-        }
     }
 
     public void request(String line) {
@@ -237,15 +256,6 @@ public class VisualHandler implements Runnable {
 
     }
 
-    public void alert(String msg) {
-        try {
-            out.println(msg);
-        } catch (Exception ex) {
-            System.out.println("null de verdad");
-            nullSocket();
-        }
-    }
-
     public void sendMessage(String info, String status, String ip) {
 
         String iptosend = null;
@@ -336,16 +346,6 @@ public class VisualHandler implements Runnable {
 
         return ("kpad/" + idkp + "/" + msg);
 
-    }
-
-    public String notifyPad(String msg, String idkp) {
-
-        return ("topad/" + idkp + "/" + msg);
-
-    }
-
-    public String notifyVisual(String msg, String idkp) {
-        return ("tovisual/" + idkp + "/" + msg);
     }
 
     public void startClient() {

@@ -37,7 +37,7 @@ public class Automata extends Alive {
         hitbox = new Rectangle((int) x, (int) y, WIDTH, HEIGHT);
 
         this.color = color;
-        colorhex = String.format("#%02x%02x%02x", color.getRed(),color.getGreen(),color.getBlue());
+        colorhex = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
 
         time = System.nanoTime();
 
@@ -55,9 +55,26 @@ public class Automata extends Alive {
         }
     }
 
+    public void collision() {
+        dx *= -1;
+        dy *= -1;
+    }
+
+    public void death() {
+        alive = false;
+        kg.getObjects().remove(this);
+    }
+
+    @Override
+    public void draw(Graphics g) {
+        g.setColor(color);
+        g.fillOval((int) x, (int) y, HEIGHT, WIDTH);
+        // g.drawImage(,x, y,null);
+    }
+
     @Override
     public void move() {
-       
+
         double timedif = (System.nanoTime() - time) / 10000000d;
         kg.checkColision(this);
 
@@ -70,29 +87,12 @@ public class Automata extends Alive {
 
     }
 
-    @Override
-    public void draw(Graphics g) {
-        g.setColor(color);
-        g.fillOval((int) x, (int) y, HEIGHT, WIDTH);
-        // g.drawImage(,x, y,null);
-    }
-
-    public void updateHitBox() {
-        hitbox.setBounds((int) x, (int) y, WIDTH, HEIGHT);
-    }
-
     public Rectangle nextMove() {
         return new Rectangle((int) x + (int) dx, (int) y + (int) dy, WIDTH, HEIGHT);
     }
 
-    public void collision() {
-        dx *= -1;
-        dy *= -1;
-    }
-
-    public void death() {
-        alive = false;
-        kg.getObjects().remove(this);
+    public void updateHitBox() {
+        hitbox.setBounds((int) x, (int) y, WIDTH, HEIGHT);
     }
 
 }

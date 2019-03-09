@@ -34,7 +34,7 @@ public class KillerPad implements Runnable {
         this.ip = ip;
         this.killergame = killergame;
         port = sock.getPort();
-        Controlled player = new Controlled(killergame, Color.decode("#"+color), ip, user);
+        Controlled player = new Controlled(killergame, Color.decode("#" + color), ip, user);
         killergame.getObjects().add(player);
         killergame.getKpads().add(this);
         new Thread(player).start();
@@ -54,6 +54,31 @@ public class KillerPad implements Runnable {
 
         }
 
+    }
+
+    public static void lifeShip(String msg, KillerGame kg, String ipShip, String ipOrig) {
+
+        Controlled player = null;
+
+        for (int i = 0; i < kg.getObjects().size(); i++) {
+            if (kg.getObjects().get(i) instanceof Controlled) {
+                Controlled temporal = (Controlled) kg.getObjects().get(i);
+                if (temporal.getIp().equals(ipShip)) {
+                    player = temporal;
+                }
+            }
+        }
+
+        if (player != null) {
+            if (msg.equals("death")) {
+                player.setDeath(true);
+                player.stop();
+            } else if (msg.equals("restart")) {
+                player.setDeath(false);
+            }
+        } else {
+            kg.getNk().sendMessage(kg.getNk().notifyVisual(msg, ipShip), "r", msg);
+        }
     }
 
     public void processClient(BufferedReader in, PrintWriter out) {
@@ -140,56 +165,6 @@ public class KillerPad implements Runnable {
         }
     }
 
-    public static void sendMessageToPad(String msg, KillerGame kg, String ipPad, String ipOrig) {
-
-        try {
-            Thread.sleep(20);
-        } catch (InterruptedException ex) {
-        }
-        KillerPad pad = null;
-
-        for (int i = 0; i < kg.getKpads().size(); i++) {
-            if (kg.getKpads().get(i) != null) {
-                KillerPad temporal = kg.getKpads().get(i);
-                if (temporal.ip.equals(ipPad)) {
-                    pad = temporal;
-                }
-            }
-        }
-
-        if (pad != null) {
-            pad.out.println(msg);
-        } else {
-            kg.getNk().sendMessage(kg.getNk().notifyPad(msg, ipPad), "r", ipOrig);
-        }
-
-    }
-
-    public static void lifeShip(String msg, KillerGame kg, String ipShip, String ipOrig) {
-
-        Controlled player = null;
-
-        for (int i = 0; i < kg.getObjects().size(); i++) {
-            if (kg.getObjects().get(i) instanceof Controlled) {
-                Controlled temporal = (Controlled) kg.getObjects().get(i);
-                if (temporal.getIp().equals(ipShip)) {
-                    player = temporal;
-                }
-            }
-        }
-
-        if (player != null) {
-            if (msg.equals("death")) {
-                player.setDeath(true);
-                player.stop();
-            } else if (msg.equals("restart")) {
-                player.setDeath(false);
-            }
-        } else {
-            kg.getNk().sendMessage(kg.getNk().notifyVisual(msg, ipShip), "r", msg);
-        }
-    }
-
     public static void removeShip(String msg, KillerGame kg, String ipShip, String ipOrig) {
 
         Controlled player = null;
@@ -220,11 +195,36 @@ public class KillerPad implements Runnable {
                 kp.nullSock();
                 System.out.println("tengo el pad");
                 kg.getKpads().remove(i);
-                System.out.println(ipKpad+" borrado");
+                System.out.println(ipKpad + " borrado");
                 return true;
             }
         }
         return false;
+    }
+
+    public static void sendMessageToPad(String msg, KillerGame kg, String ipPad, String ipOrig) {
+
+        try {
+            Thread.sleep(20);
+        } catch (InterruptedException ex) {
+        }
+        KillerPad pad = null;
+
+        for (int i = 0; i < kg.getKpads().size(); i++) {
+            if (kg.getKpads().get(i) != null) {
+                KillerPad temporal = kg.getKpads().get(i);
+                if (temporal.ip.equals(ipPad)) {
+                    pad = temporal;
+                }
+            }
+        }
+
+        if (pad != null) {
+            pad.out.println(msg);
+        } else {
+            kg.getNk().sendMessage(kg.getNk().notifyPad(msg, ipPad), "r", ipOrig);
+        }
+
     }
 
     public Socket getSock() {

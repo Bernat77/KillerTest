@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -34,7 +35,6 @@ public class KillerGame extends JFrame {
     private KillerServer server;
     private String iplocal;
     private int SERVERPORT = 8000;
-    //
     private VisualHandler nk = new VisualHandler(this, true);
     private VisualHandler pk = new VisualHandler(this, false);
 
@@ -48,7 +48,7 @@ public class KillerGame extends JFrame {
     JTextField ipprev;
     JTextField portprev;
 
-    int frameW = 900;
+    int frameW = 1900;
     int frameH = 700;
 
     public KillerGame() {
@@ -59,190 +59,6 @@ public class KillerGame extends JFrame {
 
     public static void main(String[] args) {
         new KillerGame();
-    }
-
-    public void portFrame() {
-        JFrame portframe = new JFrame("Killer Game: Set port");
-        portframe.setSize(240, 150);
-        Container cp = portframe.getContentPane();
-        portframe.getContentPane().setLayout(new GridBagLayout());
-
-        GridBagConstraints c = new GridBagConstraints();
-        c.gridx = 0;
-        c.gridy = 0;
-        c.gridwidth = 1;
-        c.gridheight = 1;
-        c.insets = new Insets(3, 3, 3, 3);
-        JLabel jl = new JLabel("Introduce puerto:");
-        cp.add(jl, c);
-        c.gridy = 1;
-        c.fill = GridBagConstraints.BOTH;
-        JTextField text = new JTextField();
-        cp.add(text, c);
-        JButton butt = new JButton("OK");
-        butt.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!text.getText().isEmpty()) {
-                    try {
-                        SERVERPORT = Integer.parseInt(text.getText());
-                        ipframe();
-                        portframe.dispose();
-                    } catch (Exception ex) {
-                        text.setText("Nada de letras");
-                    }
-                }
-            }
-
-        });
-
-        c.gridy = 2;
-        cp.add(butt, c);
-
-        portframe.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        portframe.setResizable(false);
-        portframe.setLocationRelativeTo(null);
-        portframe.setVisible(true);
-    }
-
-    public void ipframe() {
-        connection = new JFrame("Killer Game: Set IP's");
-        connection.setSize(500, 100);
-        connection.setLocationRelativeTo(null);
-        connection.setResizable(false);
-        connection.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-        Container cp = connection.getContentPane();
-        connection.getContentPane().setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.fill = GridBagConstraints.BOTH;
-        c.insets = new Insets(3, 4, 4, 3);
-        c.gridx = 0;
-        c.gridy = 0;
-        c.gridheight = 1;
-        c.gridwidth = 1;
-        JLabel ip1 = new JLabel("IP Previous:");
-        connection.add(ip1, c);
-        c.gridx = 1;
-        JLabel ip2 = new JLabel("PORT:");
-        connection.add(ip2, c);
-        c.gridx = 3;
-        JLabel ip3 = new JLabel("IP Next:");
-        connection.add(ip3, c);
-        c.gridx = 4;
-        JLabel ip4 = new JLabel("PORT:");
-        connection.add(ip4, c);
-        ipprev = new JTextField(10);
-        portprev = new JTextField(5);
-        ipnext = new JTextField(10);
-        portnext = new JTextField(5);
-
-        c.gridx = 0;
-        c.gridy = 1;
-
-        connection.add(ipprev, c);
-        c.gridx = 1;
-        connection.add(portprev, c);
-
-        c.gridx = 2;
-        c.insets = new Insets(3, 6, 6, 3);
-        JButton start = new JButton("START");
-        start.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    if (nk.getIp() == null && nk.getOriginport() == 0) {
-                        nk.setIp(ipnext.getText());
-                        if (!portnext.getText().trim().equals("")) {
-                            nk.setOriginport(Integer.parseInt(portnext.getText()));
-                        }
-                    }
-                    //
-                    if (pk.getIp() == null && pk.getOriginport() == 0) {
-                        pk.setIp(ipprev.getText());
-                        if (!portprev.getText().trim().equals("")) {
-                            pk.setOriginport(Integer.parseInt(portprev.getText()));
-                        }
-                    }
-
-                    // frame.dispose();
-                } catch (Exception ex) {
-                    System.out.println(ex.getMessage());
-                    System.out.println("Nada de letras.");
-                }
-            }
-        });
-
-        start.setSize(100, 100);
-        connection.add(start, c);
-
-        c.insets = new Insets(3, 4, 4, 3);
-        c.gridx = 3;
-        connection.add(ipnext, c);
-        c.gridx = 4;
-        connection.add(portnext, c);
-        connection.setVisible(true);
-
-    }
-
-    public void startServer() {
-
-        try {
-            iplocal = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException ex) {
-            System.err.println("Error de red..");
-        }
-
-        boolean ok = false;
-        while (!ok) {
-
-            try {
-                server = new KillerServer(this, SERVERPORT);
-                if (server.getServerSocket() != null) {
-                    ok = true;
-                    System.out.println("Server iniciado");
-                }
-            } catch (Exception ex) {
-                SERVERPORT++;
-                System.err.println("Socket ocupado, reconectando en el siguiente..");
-            }
-        }
-
-        new Thread(server).start();
-        new Thread(nk).start();
-        new Thread(pk).start();
-
-        frame();
-        for (int i = 0; i < 3; i++) {
-            objects.add(new Automata(this, Color.red));
-        }
-
-        // objects.add(new Controlled(this, Color.pink, 1));
-        startThreads();
-    }
-
-    public void frame() {
-        setSize(new Dimension(frameW, frameH));
-        setResizable(false);
-        //setExtendedState(JFrame.MAXIMIZED_BOTH);
-        //setUndecorated(true);
-        getContentPane().add(viewer = new Viewer(this));
-        viewer.images();
-        //pack();
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setVisible(true);
-
-        new Thread(viewer).start();
-
-    }
-
-    public void startThreads() {
-        for (int i = 0; i < objects.size(); i++) {
-            new Thread((Alive) objects.get(i)).start();
-
-        }
-
     }
 
     public void checkColision(Alive obj) {
@@ -358,6 +174,192 @@ public class KillerGame extends JFrame {
     }
 
     public void createShoot(Shoot shoot) {
+
+    }
+
+    public void frame() {
+
+        setSize(new Dimension(Toolkit.getDefaultToolkit().getScreenSize().width,
+                Toolkit.getDefaultToolkit().getScreenSize().height));
+        //setResizable(false);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        //setUndecorated(true);
+        getContentPane().add(viewer = new Viewer(this));
+        viewer.images();
+        pack();
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setVisible(true);
+
+        new Thread(viewer).start();
+
+    }
+
+    public void ipframe() {
+        connection = new JFrame("Killer Game: Set IP's");
+        connection.setSize(500, 100);
+        connection.setLocationRelativeTo(null);
+        connection.setResizable(false);
+        connection.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        Container cp = connection.getContentPane();
+        connection.getContentPane().setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
+        c.insets = new Insets(3, 4, 4, 3);
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridheight = 1;
+        c.gridwidth = 1;
+        JLabel ip1 = new JLabel("IP Previous:");
+        connection.add(ip1, c);
+        c.gridx = 1;
+        JLabel ip2 = new JLabel("PORT:");
+        connection.add(ip2, c);
+        c.gridx = 3;
+        JLabel ip3 = new JLabel("IP Next:");
+        connection.add(ip3, c);
+        c.gridx = 4;
+        JLabel ip4 = new JLabel("PORT:");
+        connection.add(ip4, c);
+        ipprev = new JTextField(10);
+        portprev = new JTextField(5);
+        ipnext = new JTextField(10);
+        portnext = new JTextField(5);
+
+        c.gridx = 0;
+        c.gridy = 1;
+
+        connection.add(ipprev, c);
+        c.gridx = 1;
+        connection.add(portprev, c);
+
+        c.gridx = 2;
+        c.insets = new Insets(3, 6, 6, 3);
+        JButton start = new JButton("START");
+        start.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (nk.getIp() == null && nk.getOriginport() == 0) {
+                        nk.setIp(ipnext.getText());
+                        if (!portnext.getText().trim().equals("")) {
+                            nk.setOriginport(Integer.parseInt(portnext.getText()));
+                        }
+                    }
+                    //
+                    if (pk.getIp() == null && pk.getOriginport() == 0) {
+                        pk.setIp(ipprev.getText());
+                        if (!portprev.getText().trim().equals("")) {
+                            pk.setOriginport(Integer.parseInt(portprev.getText()));
+                        }
+                    }
+
+                    // frame.dispose();
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                    System.out.println("Nada de letras.");
+                }
+            }
+        });
+
+        start.setSize(100, 100);
+        connection.add(start, c);
+
+        c.insets = new Insets(3, 4, 4, 3);
+        c.gridx = 3;
+        connection.add(ipnext, c);
+        c.gridx = 4;
+        connection.add(portnext, c);
+        connection.setVisible(true);
+
+    }
+
+    public void portFrame() {
+        JFrame portframe = new JFrame("Killer Game: Set port");
+        portframe.setSize(240, 150);
+        Container cp = portframe.getContentPane();
+        portframe.getContentPane().setLayout(new GridBagLayout());
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        c.insets = new Insets(3, 3, 3, 3);
+        JLabel jl = new JLabel("Introduce puerto:");
+        cp.add(jl, c);
+        c.gridy = 1;
+        c.fill = GridBagConstraints.BOTH;
+        JTextField text = new JTextField();
+        cp.add(text, c);
+        JButton butt = new JButton("OK");
+        butt.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!text.getText().isEmpty()) {
+                    try {
+                        SERVERPORT = Integer.parseInt(text.getText());
+                        ipframe();
+                        portframe.dispose();
+                    } catch (Exception ex) {
+                        text.setText("Nada de letras");
+                    }
+                }
+            }
+
+        });
+
+        c.gridy = 2;
+        cp.add(butt, c);
+
+        portframe.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        portframe.setResizable(false);
+        portframe.setLocationRelativeTo(null);
+        portframe.setVisible(true);
+    }
+
+    public void startServer() {
+
+        try {
+            iplocal = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException ex) {
+            System.err.println("Error de red..");
+        }
+
+        boolean ok = false;
+        while (!ok) {
+
+            try {
+                server = new KillerServer(this, SERVERPORT);
+                if (server.getServerSocket() != null) {
+                    ok = true;
+                    System.out.println("Server iniciado");
+                }
+            } catch (Exception ex) {
+                SERVERPORT++;
+                System.err.println("Socket ocupado, reconectando en el siguiente..");
+            }
+        }
+
+        new Thread(server).start();
+        new Thread(nk).start();
+        new Thread(pk).start();
+
+        frame();
+        for (int i = 0; i < 3; i++) {
+            objects.add(new Automata(this, Color.red));
+        }
+
+        // objects.add(new Controlled(this, Color.pink, 1));
+        startThreads();
+    }
+
+    public void startThreads() {
+        for (int i = 0; i < objects.size(); i++) {
+            new Thread((Alive) objects.get(i)).start();
+
+        }
 
     }
 
