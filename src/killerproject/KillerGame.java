@@ -347,9 +347,9 @@ public class KillerGame extends JFrame {
         new Thread(pk).start();
 
         frame();
-        for (int i = 0; i < 3; i++) {
+        /*for (int i = 0; i < 3; i++) {
             objects.add(new Automata(this, Color.red));
-        }
+        }*/
 
         // objects.add(new Controlled(this, Color.pink, 1));
         startThreads();

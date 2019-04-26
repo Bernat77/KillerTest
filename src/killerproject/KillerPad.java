@@ -149,15 +149,12 @@ public class KillerPad implements Runnable {
             } else {
                 kg.getNk().sendMessage(kg.getNk().sendPadAction(msg, ipShip), "r", ipOrig);
             }
-        } else if (msg.equals("up") || msg.equals("down")
-                || msg.equals("left") || msg.equals("right")
-                || msg.equals("downright") || msg.equals("downleft")
-                || msg.equals("upright") || msg.equals("upleft")
-                || msg.equals("idle")) {
+        } else if (msg.contains("direction")) {
             if (player != null) {
                 if (!player.isDeath()) {
+                    String[] dirs = msg.split(";");
                     System.out.println("entra");
-                    player.setDirections(msg);
+                    player.setDirections(dirs[1]+","+dirs[2]);
                 }
             } else {
                 kg.getNk().sendMessage(kg.getNk().sendPadAction(msg, ipShip), "r", ipOrig);

@@ -23,6 +23,7 @@ public class Controlled extends Alive {
     boolean wup, wdown, wright, wleft;
     private ArrayList<Shoot> shoots = new ArrayList();
     private boolean death;
+    private double ax, ay;
 
     public Controlled(KillerGame kg, Color color, String ip, String user) {
         this.kg = kg;
@@ -42,6 +43,8 @@ public class Controlled extends Alive {
         dx = 0;
         dy = 0;
         speed = 3.1;
+        ax = 0;
+        ay = 0;
 
         //posicion aleatoria en el espacio del canvas
         x = (int) (kg.getViewer().getWidth() / 2 * Math.random());
@@ -76,35 +79,36 @@ public class Controlled extends Alive {
     }
 
     public void checkMove() {
-        if (up && !wup) {
-            dy = -speed;
-            if (wdown) {
-                wdown = false;
-            }
-        }
-        if (down && !wdown) {
-            dy = speed;
-
-            if (wup) {
-                wup = false;
-            }
-        }
-        if (right && !wright) {
-            dx = speed;
-            fright = true;
-
-            if (wleft) {
-                wleft = false;
-            }
-        }
-        if (left && !wleft) {
-            dx = -speed;
-            fright = false;
-
-            if (wright) {
-                wright = false;
-            }
-        }
+        //        if (up && !wup) {
+        //            dy = -speed;
+        //            if (wdown) {
+        //                wdown = false;
+        //            }
+        //        }
+        //        if (down && !wdown) {
+        //            dy = speed;
+        //
+        //            if (wup) {
+        //                wup = false;
+        //            }
+        //        }
+        //        if (right && !wright) {
+        //            dx = speed;
+        //            fright = true;
+        //
+        //            if (wleft) {
+        //                wleft = false;
+        //            }
+        //        }
+        //        if (left && !wleft) {
+        //            dx = -speed;
+        //            fright = false;
+        //
+        //            if (wright) {
+        //                wright = false;
+        //            }
+        //        }
+        
     }
 
     @Override
@@ -152,8 +156,12 @@ public class Controlled extends Alive {
 
         kg.checkColision(this);
         checkMove();
-        x += dx * timedif;
-        y += dy * timedif;
+//        x += dx * timedif;
+//        y += dy * timedif;
+        
+
+        x += speed * ax ;
+        y += speed * ay;
 
         dx = 0;
         dy = 0;
@@ -175,66 +183,10 @@ public class Controlled extends Alive {
 
     public void setDirections(String direction) {
 
-        String dir = direction.trim().toLowerCase();
+        String[] dir = direction.trim().toLowerCase().split(",");
 
-        switch (dir) {
-            case "up":
-                System.out.println("upppp");
-                up = true;
-                down = false;
-                right = false;
-                left = false;
-                break;
-            case "upright":
-                up = true;
-                down = false;
-                right = true;
-                left = false;
-                break;
-            case "upleft":
-                up = true;
-                down = false;
-                right = false;
-                left = true;
-                break;
-            case "left":
-                up = false;
-                down = false;
-                right = false;
-                left = true;
-                break;
-            case "right":
-                up = false;
-                down = false;
-                right = true;
-                left = false;
-                break;
-            case "down":
-                up = false;
-                down = true;
-                right = false;
-                left = false;
-                break;
-            case "downleft":
-                up = false;
-                down = true;
-                right = false;
-                left = true;
-                break;
-            case "downright":
-                up = false;
-                down = true;
-                right = true;
-                left = false;
-                break;
-            case "idle":
-                up = false;
-                down = false;
-                right = false;
-                left = false;
-                break;
-        }
-
+        ax = Double.parseDouble(dir[0]);
+        ay = Double.parseDouble(dir[1]) * -1;
     }
 
     public void shoot() {
