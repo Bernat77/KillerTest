@@ -16,7 +16,7 @@ public abstract class Alive extends VisibleObject implements Runnable {
 
     double dx;
     double dy;
-    double speed;
+    double maxspeed;
 
     Rectangle hitbox;
     Color color;
@@ -50,12 +50,12 @@ public abstract class Alive extends VisibleObject implements Runnable {
         this.dy = dy;
     }
 
-    public double getSpeed() {
-        return speed;
+    public double getMaxspeed() {
+        return maxspeed;
     }
 
-    public void setSpeed(double speed) {
-        this.speed = speed;
+    public void setMaxspeed(double maxspeed) {
+        this.maxspeed = maxspeed;
     }
 
     public Rectangle getHitbox() {

@@ -18,20 +18,24 @@ public class Shoot extends Automata implements Runnable {
     private double speed;
     private boolean frightdir;
     private Controlled ship;
+    private double radians;
     Rectangle hitbox;
 
     private boolean alive;
 
-    public Shoot(KillerGame kg, Color color, Controlled ship) {
-        super(kg, color);
+    public Shoot(KillerGame kg, Color color, double radians, Controlled ship) {
+        super(kg, Color.GREEN);
         this.ship = ship;
-        this.radius = (int) (Math.min(ship.HEIGHT, ship.WIDTH) / 2);
-        this.x = ship.getX();
-        this.y = ship.getY() + (this.radius / 2);
+        this.radius = (int) (Math.min(ship.HEIGHT, ship.WIDTH) / 7);
+        this.x = ship.morroX;
+        this.y = ship.morroY;
+        this.radians = radians+Math.PI/2;
         hitbox = new Rectangle((int) this.x, (int) this.y, this.radius, this.radius);
         this.frightdir = ship.fright;
         this.speed = 15;
         alive = true;
+        System.out.println(radians);
+        System.out.println(Math.cos(radians)+","+Math.sin(radians));
 
     }
 
@@ -56,11 +60,10 @@ public class Shoot extends Automata implements Runnable {
 
     public void move() {
         kg.checkColision(this);
-        if (this.frightdir) {
-            x += (int) speed;
-        } else {
-            x -= (int) speed;
-        }
+
+        x += speed * Math.cos(radians);
+        y += speed * Math.sin(radians) * -1;
+
         updateHitBox();
     }
 
@@ -100,11 +103,11 @@ public class Shoot extends Automata implements Runnable {
         this.radius = radius;
     }
 
-    public double getSpeed() {
+    public double getMaxspeed() {
         return speed;
     }
 
-    public void setSpeed(double speed) {
+    public void setMaxspeed(double speed) {
         this.speed = speed;
     }
 

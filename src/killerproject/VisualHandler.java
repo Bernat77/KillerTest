@@ -194,7 +194,7 @@ public class VisualHandler implements Runnable {
 
                     Controlled contr = new Controlled(killergame, Color.decode(color), ip, user);
                     contr.y = killergame.getViewer().getHeight() * Double.valueOf(percnt);
-                    contr.speed = Double.valueOf(speed);
+                    contr.maxspeed = Double.valueOf(speed);
                     contr.WIDTH = Integer.parseInt(WIDTH);
                     contr.HEIGHT = Integer.parseInt(HEIGHT);
 
@@ -234,7 +234,7 @@ public class VisualHandler implements Runnable {
 
                     Automata auto = new Automata(killergame, Color.decode(color));
                     auto.y = killergame.getViewer().getHeight() * Double.valueOf(percnt);
-                    auto.speed = Double.valueOf(speed);
+                    auto.maxspeed = Double.valueOf(speed);
                     auto.WIDTH = Integer.parseInt(WIDTH);
                     auto.HEIGHT = Integer.parseInt(HEIGHT);
 
@@ -297,7 +297,7 @@ public class VisualHandler implements Runnable {
         }
 
         String msg = "player/" + obj.ip + "/" + obj.user + "/" + obj.colorhex
-                + "/" + percentSc + "/" + obj.speed + "/"
+                + "/" + percentSc + "/" + obj.maxspeed + "/"
                 + obj.WIDTH + "/" + obj.HEIGHT + "/" + dir + "/"
                 + axisX + "/" + axisY;
         return msg;
@@ -320,7 +320,7 @@ public class VisualHandler implements Runnable {
         }
 
         String msg = "automata/" + obj.colorhex
-                + "/" + percentSc + "/" + obj.speed + "/"
+                + "/" + percentSc + "/" + obj.maxspeed + "/"
                 + obj.WIDTH + "/" + obj.HEIGHT + "/" + dirx + "/" + diry;
         return msg;
     }
@@ -336,7 +336,7 @@ public class VisualHandler implements Runnable {
         }
 
         String msg = "shoot/" + obj.getShip().ip + "/" + obj.color
-                + "/" + percentSc + "/" + obj.getSpeed() + "/"
+                + "/" + percentSc + "/"
                 + obj.WIDTH + "/" + obj.HEIGHT + "/" + dir;
         return msg;
 

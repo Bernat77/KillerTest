@@ -22,7 +22,7 @@ public class Viewer extends Canvas implements Runnable {
 
     private KillerGame killer;
 
-    private int fps = 30;
+    private int fps = 60;
     private double averageFPS;
     private double target = 1000 / fps;
 

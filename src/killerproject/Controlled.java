@@ -7,8 +7,19 @@ package killerproject;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.*;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.scene.transform.Affine;
 
 /**
  *
@@ -23,15 +34,17 @@ public class Controlled extends Alive {
     boolean wup, wdown, wright, wleft;
     private ArrayList<Shoot> shoots = new ArrayList();
     private boolean death;
-    private double ax, ay;
+    double vx, vy, a, m, maxspeedX, maxspeedY, perX, perY, morroX, morroY, radians;
+
+    private BufferedImage sprite;
 
     public Controlled(KillerGame kg, Color color, String ip, String user) {
         this.kg = kg;
         this.ip = ip;
 
         //aspecto visual
-        HEIGHT = 30;
-        WIDTH = 30;
+        HEIGHT = 100;
+        WIDTH = 100;
         this.user = user;
         this.color = color;
         colorhex = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
@@ -42,9 +55,13 @@ public class Controlled extends Alive {
         //movimiento y posición
         dx = 0;
         dy = 0;
-        speed = 3.1;
-        ax = 0;
-        ay = 0;
+        maxspeed = 7;
+        vx = 0;
+        vy = 0;
+        a = 0.1;
+        m = 15;
+        perX = 0;
+        perY = 0;
 
         //posicion aleatoria en el espacio del canvas
         x = (int) (kg.getViewer().getWidth() / 2 * Math.random());
@@ -62,6 +79,24 @@ public class Controlled extends Alive {
         //tiempo
         time = System.nanoTime();
 
+        try {
+            sprite = ImageIO.read(new File("src\\sprites\\ship.png"));
+        } catch (IOException ex) {
+            System.out.println(new File("src\\sprites\\ship.png").getAbsoluteFile());
+        }
+
+        sprite = getScaledImage(sprite, WIDTH, WIDTH);
+        radians = 0;
+
+    }
+
+    private BufferedImage getScaledImage(Image srcImg, int w, int h) {
+        BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TRANSLUCENT);
+        Graphics2D g2 = resizedImg.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2.drawImage(srcImg, 0, 0, w, h, null);
+        g2.dispose();
+        return resizedImg;
     }
 
     public void run() {
@@ -80,20 +115,20 @@ public class Controlled extends Alive {
 
     public void checkMove() {
         //        if (up && !wup) {
-        //            dy = -speed;
+        //            dy = -maxspeed;
         //            if (wdown) {
         //                wdown = false;
         //            }
         //        }
         //        if (down && !wdown) {
-        //            dy = speed;
+        //            dy = maxspeed;
         //
         //            if (wup) {
         //                wup = false;
         //            }
         //        }
         //        if (right && !wright) {
-        //            dx = speed;
+        //            dx = maxspeed;
         //            fright = true;
         //
         //            if (wleft) {
@@ -101,14 +136,14 @@ public class Controlled extends Alive {
         //            }
         //        }
         //        if (left && !wleft) {
-        //            dx = -speed;
+        //            dx = -maxspeed;
         //            fright = false;
         //
         //            if (wright) {
         //                wright = false;
         //            }
         //        }
-        
+
     }
 
     @Override
@@ -123,13 +158,40 @@ public class Controlled extends Alive {
     @Override
     public void draw(Graphics g) {
         if (!death) {
+
+            Graphics2D g2d = (Graphics2D) g;
             g.setColor(Color.WHITE);
-            g.drawString(user, (int) x, (int) y - (HEIGHT / 2));
+            g.drawString(user, (int) x, (int) y - (HEIGHT / 3));
             g.setColor(color);
             g.fillOval((int) x, (int) y, HEIGHT, WIDTH);
+            g2d.drawImage(sprite, alterateObject(), null);
             drawShoots(g);
         }
         // g.drawImage(,x, y,null);
+    }
+
+    public AffineTransform alterateObject() {
+
+        AffineTransform rot = new AffineTransform();
+
+        rot.translate(x, y);
+
+        if (perX != 0 || perY != 0) {
+
+            if (perX <= 0 && perY * -1 > 0) {
+                radians = Math.atan(perX / perY);
+                System.out.println(radians);
+            } else if (perX <= 0 && perY * -1 <= 0) {
+                radians = Math.atan(Math.abs(perY / perX)) + (Math.PI / 2);
+                System.out.println(radians);
+            } else if (perX > 0 && perY * -1 <= 0) {
+                radians = Math.atan(Math.abs(perX / perY)) + Math.PI;;
+            } else if (perX > 0 && perY * -1 > 0) {
+                radians = Math.atan(Math.abs(perY / perX)) + (Math.PI * 1.5);
+            }
+        }
+        rot.rotate(-radians, WIDTH / 2, HEIGHT / 2);
+        return rot;
     }
 
     public void drawShoots(Graphics g) {
@@ -158,10 +220,40 @@ public class Controlled extends Alive {
         checkMove();
 //        x += dx * timedif;
 //        y += dy * timedif;
-        
 
-        x += speed * ax ;
-        y += speed * ay;
+        maxspeedX = Math.abs(maxspeed * perX);
+        maxspeedY = Math.abs(maxspeed * perY);
+
+        if (vx < maxspeedX) {
+            if (vx + a <= maxspeedX) {
+                vx += a;
+            }
+        } else if (vx > maxspeedX && vx != 0) {
+            vx -= a;
+        }
+
+        if (vy < maxspeedY) {
+            if (vy + a <= maxspeedY) {
+                vy += a;
+            }
+        } else if (vy > maxspeedY && vy != 0) {
+            vy -= a;
+        }
+
+        if (radians >= Math.PI) {
+            x += vx;
+        } else {
+            x -= vx;
+        }
+
+        if (radians <= Math.PI / 2 || radians >= Math.PI * 1.5) {
+            y -= vy;
+        } else {
+            y += vy;
+        }
+
+        morroX = (x + WIDTH / 2) - (Math.sin(radians) * (HEIGHT / 2));
+        morroY = (y + HEIGHT / 2) - (Math.cos(radians) * (HEIGHT / 2));
 
         dx = 0;
         dy = 0;
@@ -185,12 +277,12 @@ public class Controlled extends Alive {
 
         String[] dir = direction.trim().toLowerCase().split(",");
 
-        ax = Double.parseDouble(dir[0]);
-        ay = Double.parseDouble(dir[1]) * -1;
+        perX = Double.parseDouble(dir[0]);
+        perY = Double.parseDouble(dir[1]) * -1;
     }
 
     public void shoot() {
-        Shoot fire = new Shoot(kg, color, this);
+        Shoot fire = new Shoot(kg, color, radians, this);
         shoots.add(fire);
         new Thread(fire).start();
     }
